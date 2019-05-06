@@ -6,6 +6,8 @@ require (
 	cloud.google.com/go v0.37.4 // indirect
 	github.com/BurntSushi/xgb v0.0.0-20160522221800-27f122750802 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/go-redis/redis v6.15.2+incompatible
+	github.com/go-sql-driver/mysql v1.4.0
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/protobuf v1.3.1
 	github.com/golang/snappy v0.0.1 // indirect

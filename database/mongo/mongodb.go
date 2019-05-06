@@ -10,9 +10,7 @@ import (
 type Config struct {
 	//URI fomat https://docs.mongodb.com/manual/reference/connection-string/
 	//https://docs.mongodb.com/manual/reference/connection-string/#connections-connection-options
-	//connTimeout in connstring does not work
-	URI         string
-	ConnTimeout time.Duration
+	URI string
 }
 
 func NewMongo(c *Config) (*mgo.Client, error) {
@@ -21,7 +19,7 @@ func NewMongo(c *Config) (*mgo.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	ctx, _ = context.WithTimeout(ctx, c.ConnTimeout)
+	ctx, _ = context.WithTimeout(ctx, time.Second*5)
 	err = cli.Ping(ctx, nil)
 	if err != nil {
 		return nil, err

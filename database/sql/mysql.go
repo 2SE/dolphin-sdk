@@ -2,12 +2,12 @@ package sql
 
 import (
 	"context"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"time"
 )
 
 type Config struct {
-	Addr         string // for trace
 	DSN          string // write data source name.
 	Active       int    // pool
 	Idle         int    // pool
@@ -38,7 +38,7 @@ func NewMySQL(c *Config) (*DB, error) {
 }
 
 func connect(c *Config, dataSourceName string) (*sqlx.DB, error) {
-	ctx, _ := context.WithTimeout(context.Background(), c.ConnTimeout)
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*5)
 	db, err := sqlx.ConnectContext(ctx, "mysql", dataSourceName)
 	if err != nil {
 		return nil, err
