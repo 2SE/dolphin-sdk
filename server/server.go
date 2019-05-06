@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	"gitlab.2se.com/hashhash/server-sdk/pb"
 	"google.golang.org/grpc"
 	"net"
@@ -21,20 +20,16 @@ type Config struct {
 
 var base = new(baseService)
 
-type method func(proto.Message) (proto.Message, error)
-
 //服务主体
 type baseService struct {
-	methods map[string]method
+	listen net.Listener
+	svc    *grpc.Server
 }
 
 //基础请求
 func (b *baseService) Request(ctx context.Context, req *pb.ClientComRequest) (*pb.ServerComResponse, error) {
 	response := delegate.invoke(req)
 	return response, nil
-}
-func (b *baseService) registerMP(f method) {
-
 }
 
 func (b *baseService) run(c *Config) {
@@ -43,12 +38,19 @@ func (b *baseService) run(c *Config) {
 		panic(fmt.Errorf("tpc listen err:%v ", err))
 	}
 	defer l.Close()
-	svc := grpc.NewServer(
+	b.listen = l
+	b.svc = grpc.NewServer(
 		grpc.ConnectionTimeout(c.ConnTimeout),
 		grpc.WriteBufferSize(c.WriteBufSize),
 		grpc.ReadBufferSize(c.ReadBufSize))
-	pb.RegisterAppServeServer(svc, b)
-	if err := svc.Serve(l); err != nil {
+	pb.RegisterAppServeServer(b.svc, b)
+	if err := b.svc.Serve(l); err != nil {
 		panic(fmt.Errorf("failed to serve: %v", err))
+	}
+}
+func (b *baseService) stop() {
+	if b.svc != nil {
+		b.svc.Stop()
+		b.listen.Close()
 	}
 }

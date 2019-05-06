@@ -45,20 +45,22 @@ func parseService(s interface{}) error {
 		if a.Func.Type().In(1).Kind() != reflect.Ptr || a.Func.Type().Out(0).Kind() != reflect.Ptr || a.Func.Type().Out(1).Name() != "error" {
 			continue
 		}
-		p1 := reflect.New(a.Func.Type().In(1).Elem()).Interface().(descriptor.Message)
+		in := a.Func.Type().In(1).Elem()
+		p1 := reflect.New(in).Interface().(descriptor.Message)
 		fd1, _ := descriptor.ForMessage(p1)
 		if *fd1.Syntax != syntax {
 			continue
 		}
-		p2 := reflect.New(a.Func.Type().In(1).Elem()).Interface().(descriptor.Message)
+		out := a.Func.Type().Out(0).Elem()
+		p2 := reflect.New(out).Interface().(descriptor.Message)
 		fd2, _ := descriptor.ForMessage(p2)
 		if *fd2.Syntax != syntax {
 			continue
 		}
 		fnm := a.Name
 		version := parseVersion(fnm)
-		registerMethod(version, resource, fnm)
-
+		appInfo.registerMethod(version, resource, fnm)
+		delegate.registerMethod(version, resource, fnm, a, in, out)
 		f = true
 	}
 	if f {

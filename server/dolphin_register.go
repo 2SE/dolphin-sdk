@@ -28,7 +28,3 @@ func (a *AppInfo) registerMethod(version, resource, action string) {
 	}
 	a.Methods = append(a.Methods, &MP{version, resource, action})
 }
-
-func registerMethod(version, resource, action string) {
-	appInfo.registerMethod(version, resource, action)
-}
