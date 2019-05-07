@@ -99,6 +99,7 @@ func parseServices(services ...interface{}) error {
 		if !f {
 			return fmt.Errorf("the service index of %d is err:%v ", idx, ErrServiceUseless)
 		}
+		delegate.registerService(r, reflect.ValueOf(s))
 	}
 	base.readyGo()
 	md.genDoc()

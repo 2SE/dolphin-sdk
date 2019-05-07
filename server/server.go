@@ -52,7 +52,7 @@ func (b *baseService) run(c *Config) {
 		grpc.WriteBufferSize(c.WriteBufSize),
 		grpc.ReadBufferSize(c.ReadBufSize))
 	pb.RegisterAppServeServer(b.svc, b)
-	logrus.Info("Grpc server start...")
+	logrus.Info("Grpc server start and listen on ", c.Address)
 	if err := b.svc.Serve(l); err != nil {
 		panic(fmt.Errorf("failed to serve: %v", err))
 	}

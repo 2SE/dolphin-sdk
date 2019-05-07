@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"github.com/2se/dolphin-sdk/pb"
 	"github.com/golang/protobuf/descriptor"
 	"github.com/golang/protobuf/proto"
@@ -11,6 +12,7 @@ import (
 
 var (
 	delegate = &mpdelegate{
+		services:  make(map[string]reflect.Value),
 		direction: make(map[string]map[string]map[string]*grpcMethod),
 	}
 
@@ -26,9 +28,13 @@ type grpcMethod struct {
 
 type mpdelegate struct {
 	//resource version action method
+	services  map[string]reflect.Value
 	direction map[string]map[string]map[string]*grpcMethod
 }
 
+func (m *mpdelegate) registerService(resource string, value reflect.Value) {
+	m.services[resource] = value
+}
 func (m *mpdelegate) registerMethod(version, resource, action string, mehtod reflect.Method, in, out reflect.Type) error {
 	if m.direction[resource] == nil {
 		m.direction[resource] = make(map[string]map[string]*grpcMethod)
@@ -51,7 +57,7 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 		Id: req.Id,
 	}
 	grpcM := m.direction[req.Meta.Resource][req.Meta.Revision][req.Meta.Action]
-	inputs := make([]reflect.Value, 1)
+	inputs := make([]reflect.Value, 2)
 	tmp := reflect.New(grpcM.argin).Interface().(descriptor.Message)
 	err := ptypes.UnmarshalAny(req.Params, tmp)
 	if err != nil {
@@ -59,9 +65,13 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 		response.Text = ErrParamNotSpecified.Error()
 		return response
 	}
-	inputs[0] = reflect.ValueOf(tmp)
+	inputs[0] = m.services[req.Meta.Resource]
+	inputs[1] = reflect.ValueOf(tmp)
 	vals := grpcM.method.Func.Call(inputs)
-	if vals[0].Type() == grpcM.argout && !vals[0].IsNil() {
+	fmt.Println("valen:", len(vals))
+	fmt.Println(vals[0].Elem().Type())
+	if vals[0].Elem().Type() == grpcM.argout && !vals[0].IsNil() {
+		fmt.Println("去了")
 		object, err := ptypes.MarshalAny(vals[0].Interface().(proto.Message))
 		if err != nil {
 			response.Code = 500

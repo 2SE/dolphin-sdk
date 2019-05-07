@@ -1,12 +1,22 @@
 package mock
 
+import (
+	"errors"
+	"fmt"
+)
+
 var MkService = new(MockUserService)
 
 type MockUserService struct {
 }
 
 func (s *MockUserService) GetUser_V2(request *GetUserRequest) (*User, error) {
-	return nil, nil
+	if request.UserId == 1 {
+		fmt.Println("来了", request.UserId)
+		return &User{UserId: 1, UserName: "Dolphin", Age: 25}, nil
+	} else {
+		return nil, errors.New("user not found")
+	}
 }
 func (s *MockUserService) GetUser(request *GetUserRequest) (*User, error) {
 	return nil, nil
