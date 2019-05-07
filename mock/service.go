@@ -1,28 +1,32 @@
 package mock
 
-var MockService = new(mockService)
+var MkService = new(MockUserService)
 
-type mockService struct {
+type MockUserService struct {
 }
 
-func (s *mockService) GetUser_V2(request *GetUserRequest) (*User, error) {
+func (s *MockUserService) GetUser_V2(request *GetUserRequest) (*User, error) {
 	return nil, nil
 }
-func (s *mockService) GetUser(request *GetUserRequest) (*User, error) {
+func (s *MockUserService) GetUser(request *GetUserRequest) (*User, error) {
 	return nil, nil
 }
-func (s *mockService) getUser_V1_123(request *GetUserRequest) (*User, error) {
+func (s *MockUserService) getUser_V1_123(request *GetUserRequest) (*User, error) {
 	return nil, nil
 }
-func (s *mockService) GetUser_V1_123(request *GetUserRequest) (*User, error) {
+func (s *MockUserService) GetUser_V1_123(request *GetUserRequest) (*User, error) {
 	return nil, nil
 }
-func (s *mockService) Get1(a int) (b int, err error) {
+func (s *MockUserService) Get1(a int) (b int, err error) {
 	return 0, nil
 }
-func (s *mockService) Get2(request *GetUserRequest) (b int, err error) {
+func (s *MockUserService) Get2(request *GetUserRequest) (b int, err error) {
 	return 0, nil
 }
-func (s *mockService) Get3(*GetUserRequest) (*User, int) {
+func (s *MockUserService) Get3(*GetUserRequest) (*User, int) {
 	return nil, 0
 }
+
+/*func (s *MockService) GetUser_V(request *GetUserRequest) (*User, error) {
+	return nil, nil
+}*/

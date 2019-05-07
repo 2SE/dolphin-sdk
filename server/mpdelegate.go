@@ -2,11 +2,10 @@ package server
 
 import (
 	"errors"
-	"fmt"
+	"github.com/2se/dolphin-sdk/pb"
 	"github.com/golang/protobuf/descriptor"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-	"gitlab.2se.com/hashhash/server-sdk/pb"
 	"reflect"
 )
 
@@ -30,7 +29,7 @@ type mpdelegate struct {
 	direction map[string]map[string]map[string]*grpcMethod
 }
 
-func (m *mpdelegate) registerMethod(version, resource, action string, mehtod reflect.Method, int, out reflect.Type) error {
+func (m *mpdelegate) registerMethod(version, resource, action string, mehtod reflect.Method, in, out reflect.Type) error {
 	if m.direction[resource] == nil {
 		m.direction[resource] = make(map[string]map[string]*grpcMethod)
 	}
@@ -42,7 +41,7 @@ func (m *mpdelegate) registerMethod(version, resource, action string, mehtod ref
 	}
 	m.direction[resource][version][action] = &grpcMethod{
 		method: mehtod,
-		argin:  int,
+		argin:  in,
 		argout: out,
 	}
 	return nil
@@ -56,7 +55,6 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 	tmp := reflect.New(grpcM.argin).Interface().(descriptor.Message)
 	err := ptypes.UnmarshalAny(req.Params, tmp)
 	if err != nil {
-		fmt.Println(err)
 		response.Code = 400
 		response.Text = ErrParamNotSpecified.Error()
 		return response

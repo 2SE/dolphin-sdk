@@ -3,7 +3,8 @@ package server
 import (
 	"context"
 	"fmt"
-	"gitlab.2se.com/hashhash/server-sdk/pb"
+	"github.com/2se/dolphin-sdk/pb"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
 	"time"
@@ -12,7 +13,8 @@ import (
 //Service config,如果需要更详细的配置，可以加
 type Config struct {
 	AppName      string
-	Address      string
+	DolphinAddr  string
+	Address      string //grpc addr
 	WriteBufSize int
 	ReadBufSize  int
 	ConnTimeout  time.Duration
@@ -24,6 +26,7 @@ var base = new(baseService)
 type baseService struct {
 	listen net.Listener
 	svc    *grpc.Server
+	ready  bool
 }
 
 //基础请求
@@ -31,8 +34,13 @@ func (b *baseService) Request(ctx context.Context, req *pb.ClientComRequest) (*p
 	response := delegate.invoke(req)
 	return response, nil
 }
-
+func (b *baseService) readyGo() {
+	b.ready = true
+}
 func (b *baseService) run(c *Config) {
+	if !b.ready {
+		panic("The service is not ready,please register your business services first.")
+	}
 	l, err := net.Listen("tcp", c.Address)
 	if err != nil {
 		panic(fmt.Errorf("tpc listen err:%v ", err))
@@ -44,6 +52,7 @@ func (b *baseService) run(c *Config) {
 		grpc.WriteBufferSize(c.WriteBufSize),
 		grpc.ReadBufferSize(c.ReadBufSize))
 	pb.RegisterAppServeServer(b.svc, b)
+	logrus.Info("Grpc server start...")
 	if err := b.svc.Serve(l); err != nil {
 		panic(fmt.Errorf("failed to serve: %v", err))
 	}
