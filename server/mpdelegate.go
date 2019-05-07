@@ -2,7 +2,6 @@ package server
 
 import (
 	"errors"
-	"fmt"
 	"github.com/2se/dolphin-sdk/pb"
 	"github.com/golang/protobuf/descriptor"
 	"github.com/golang/protobuf/proto"
@@ -68,10 +67,7 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 	inputs[0] = m.services[req.Meta.Resource]
 	inputs[1] = reflect.ValueOf(tmp)
 	vals := grpcM.method.Func.Call(inputs)
-	fmt.Println("valen:", len(vals))
-	fmt.Println(vals[0].Elem().Type())
 	if vals[0].Elem().Type() == grpcM.argout && !vals[0].IsNil() {
-		fmt.Println("去了")
 		object, err := ptypes.MarshalAny(vals[0].Interface().(proto.Message))
 		if err != nil {
 			response.Code = 500
