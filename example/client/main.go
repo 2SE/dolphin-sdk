@@ -39,14 +39,16 @@ func main() {
 	}
 
 	req := &pb.ClientComRequest{
-		Meta: &pb.ClientComMeta{
+		TraceId: "traceId_2123",
+		MethodPath: &pb.MethodPath{
 			Resource: "MockUser",
 			Revision: "v2",
 			Action:   "GetUser",
 		},
 		Params: object,
 	}
-	res, err := c.Request(context.Background(), req)
+	ctx, _ := context.WithTimeout(context.Background(), time.Second)
+	res, err := c.Request(ctx, req)
 	if err != nil {
 		log.Println(err)
 		return

@@ -2,6 +2,7 @@ package mock
 
 import (
 	"errors"
+	"github.com/2se/dolphin-sdk/scheduler"
 )
 
 var MkService = new(MockUserService)
@@ -11,6 +12,7 @@ type MockUserService struct {
 
 func (s *MockUserService) GetUser_V2(request *GetUserRequest) (*User, error) {
 	if request.UserId == 1 {
+		scheduler.SendRequest(nil)
 		return &User{UserId: 1, UserName: "Dolphin", Age: 25}, nil
 	} else {
 		return nil, errors.New("user not found")

@@ -52,10 +52,11 @@ func (m *mpdelegate) registerMethod(version, resource, action string, mehtod ref
 	return nil
 }
 func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
+	tc.push(req.TraceId) //trace save
 	response := &pb.ServerComResponse{
 		Id: req.Id,
 	}
-	grpcM := m.direction[req.Meta.Resource][req.Meta.Revision][req.Meta.Action]
+	grpcM := m.direction[req.MethodPath.Resource][req.MethodPath.Revision][req.MethodPath.Action]
 	inputs := make([]reflect.Value, 2)
 	tmp := reflect.New(grpcM.argin).Interface().(descriptor.Message)
 	err := ptypes.UnmarshalAny(req.Params, tmp)
@@ -64,9 +65,12 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 		response.Text = ErrParamNotSpecified.Error()
 		return response
 	}
-	inputs[0] = m.services[req.Meta.Resource]
+	inputs[0] = m.services[req.MethodPath.Resource]
 	inputs[1] = reflect.ValueOf(tmp)
 	vals := grpcM.method.Func.Call(inputs)
+
+	tc.remove() //trace remove
+
 	if vals[0].Elem().Type() == grpcM.argout && !vals[0].IsNil() {
 		object, err := ptypes.MarshalAny(vals[0].Interface().(proto.Message))
 		if err != nil {
@@ -77,7 +81,6 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 		response.Code = 200
 		response.Body = object
 	}
-
 	if !vals[1].IsNil() {
 		response.Code = 500
 		response.Text = vals[1].Interface().(error).Error()
