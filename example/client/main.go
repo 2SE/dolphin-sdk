@@ -18,7 +18,7 @@ func main() {
 	//input param:GetUserRequest
 	//output param:User
 
-	ctx1, _ := context.WithTimeout(context.Background(), time.Second*3)
+	ctx1, _ := context.WithTimeout(context.Background(), time.Second*5)
 	//defer cel()
 	//conn, err := grpc.DialContext(ctx1, address, grpc.WithBlock(), grpc.WithInsecure())
 	conn, err := grpc.DialContext(ctx1, "127.0.0.1:8848", grpc.WithBlock(), grpc.WithInsecure())

@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"fmt"
+	"github.com/2se/dolphin-sdk/dolregister"
 	"github.com/golang/protobuf/descriptor"
 	"github.com/sirupsen/logrus"
 	"reflect"
@@ -23,8 +24,9 @@ const (
 )
 
 var (
-	reg, _        = regexp.Compile(actNamePattern)
-	serviceReg, _ = regexp.Compile(service)
+	reg, _          = regexp.Compile(actNamePattern)
+	serviceReg, _   = regexp.Compile(service)
+	registerManager = dolregister.NewRegisterManager()
 
 	ErrServiceType       = errors.New("service type must be struct")
 	ErrServiceUseless    = errors.New("There is no public method in the service")
@@ -33,11 +35,15 @@ var (
 )
 
 func parseResouce(serviceName string) (bool, string) {
-	b := strings.Contains(serviceName, service)
-	if !b {
-		return b, strEmpty
+	l := len(serviceName)
+	if l <= slen {
+		return false, strEmpty
 	}
-	return b, serviceName[0 : len(serviceName)-7]
+	suf := serviceName[l-slen:]
+	if suf != service {
+		return false, strEmpty
+	}
+	return true, serviceName[:len(serviceName)-7]
 }
 func parseVersion(methodName string) (version, action string) {
 	v := reg.FindString(methodName)
@@ -87,12 +93,12 @@ func parseServices(services ...interface{}) error {
 			}
 			fnm := a.Name
 			version, action := parseVersion(fnm)
-			appInfo.registerMethod(version, r, action)
+			registerManager.RegisterMethod(version, r, action)
 			err := delegate.registerMethod(version, r, action, a, in, out)
 			if err != nil {
 				return fmt.Errorf("the service index of %d and the method %s is err:%v the ", idx, fnm, err)
 			}
-			md.appendMethod(version, r, action, in, out)
+			registerManager.AppendMethod(version, r, action, in, out)
 
 			f = true
 		}
@@ -102,7 +108,7 @@ func parseServices(services ...interface{}) error {
 		delegate.registerService(r, reflect.ValueOf(s))
 	}
 	base.readyGo()
-	md.genDoc()
+	registerManager.GenDoc()
 	logrus.Info("The service group registered successfully.")
 	return nil
 }

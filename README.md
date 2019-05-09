@@ -15,3 +15,7 @@
  ```
 ### 如何使用
 参照example
+
+
+### dolphin提供外部调用的方法
+详见 dolphin-sdk/server/setup.go

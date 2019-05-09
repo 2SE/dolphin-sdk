@@ -1,4 +1,4 @@
-package server
+package dolregister
 
 import (
 	"bytes"
@@ -9,7 +9,39 @@ import (
 	"net/http"
 )
 
-var appInfo = new(AppInfo)
+func NewRegisterManager() *RegisterManager {
+	return &RegisterManager{
+		AppInfoer: &AppInfo{},
+		Doc: &markdown{
+			content:  new(bytes.Buffer),
+			resource: make(map[string]struct{}),
+		},
+	}
+}
+
+type RegisterManager struct {
+	AppInfoer
+	Doc
+}
+
+func (a *RegisterManager) Release() {
+	a = nil
+}
+func (a *RegisterManager) RegisterServerOnDolpin(address string) error {
+	err := a.AppInfoer.RegisterServerOnDolpin(address)
+	if err != nil {
+		return err
+	}
+	a = nil
+	return nil
+}
+
+type AppInfoer interface {
+	SetAppName(appName string)
+	SetAddress(address string)
+	RegisterMethod(version, resource, action string)
+	RegisterServerOnDolpin(address string) error
+}
 
 type AppInfo struct {
 	PeerName string
@@ -23,13 +55,13 @@ type MP struct {
 	Action    string
 }
 
-func (a *AppInfo) setAppName(appName string) {
+func (a *AppInfo) SetAppName(appName string) {
 	a.AppName = appName
 }
-func (a *AppInfo) setAddress(address string) {
+func (a *AppInfo) SetAddress(address string) {
 	a.Address = address
 }
-func (a *AppInfo) registerMethod(version, resource, action string) {
+func (a *AppInfo) RegisterMethod(version, resource, action string) {
 	for _, v := range a.Methods {
 		if v.Action == version && v.Resource == resource && v.Action == action {
 			return
@@ -40,8 +72,8 @@ func (a *AppInfo) registerMethod(version, resource, action string) {
 
 //address http://www.xxx.com:1111
 //This method is called after the service starts successfully
-func registerServerOnDolpin(address string) error {
-	appJson, err := json.Marshal(appInfo)
+func (a *AppInfo) RegisterServerOnDolpin(address string) error {
+	appJson, err := json.Marshal(a)
 	if err != nil {
 		return err
 	}

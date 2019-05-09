@@ -1,10 +1,16 @@
-package server
+package trace
 
 import (
 	"github.com/sirupsen/logrus"
 	"runtime"
 	"sync"
 )
+
+type Tracer interface {
+	Push(traceId string)
+	Release()
+	GetTrace() (traceId string)
+}
 
 const (
 	//invoke function trace
@@ -14,15 +20,15 @@ const (
 	invokeSkipForPush = 1
 )
 
+func GetTracer() Tracer {
+	return tc
+}
+
 var tc *traceCache
 
 func init() {
 	initTraceCache()
 	tc.rloop()
-}
-
-func GetTrace() string {
-	return tc.getTrace()
 }
 
 func initTraceCache() {
@@ -79,13 +85,14 @@ Loop:
 		} else {
 			break
 		}
+		logrus.Infof("runtime disp: %d trace: %s", k, f.Name())
 	}
 	t.ready = true
 }
 
 //GetTrace/sendGrpc/.../invoke min:4
-func (t *traceCache) getTrace() string {
-	skip := 6
+func (t *traceCache) GetTrace() string {
+	skip := baseCalen - 2 //The shortest displacement
 Loop:
 	//fmt.Println(i)
 	ptr, _, _, _ := runtime.Caller(skip)
@@ -98,7 +105,7 @@ Loop:
 			skip = skip + baseCalen
 
 		} else {
-			skip = skip - idx - 1
+			skip = skip - idx + t.callers[t.curName]
 		}
 		goto Loop
 	}
@@ -109,7 +116,7 @@ func (t *traceCache) get(ptr uintptr) string {
 	return t.tmap[ptr]
 }
 
-func (t *traceCache) push(traceId string) {
+func (t *traceCache) Push(traceId string) {
 	if !t.ready {
 		t.initCurIndex()
 	}
@@ -117,7 +124,7 @@ func (t *traceCache) push(traceId string) {
 	ptr := runtime.FuncForPC(pc).Entry()
 	t.receiveCh <- &trace{ptr, traceId}
 }
-func (t *traceCache) remove() {
+func (t *traceCache) Release() {
 	pc, _, _, _ := runtime.Caller(2)
 	ptr := runtime.FuncForPC(pc).Entry()
 	t.removeCh <- ptr

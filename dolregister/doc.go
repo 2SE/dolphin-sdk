@@ -1,4 +1,4 @@
-package server
+package dolregister
 
 import (
 	"bytes"
@@ -7,6 +7,11 @@ import (
 	"reflect"
 )
 
+type Doc interface {
+	SetTitle(appname string)
+	AppendMethod(version, resource, action string, in, out reflect.Type)
+	GenDoc()
+}
 type markdown struct {
 	content  *bytes.Buffer
 	resource map[string]struct{}
@@ -14,15 +19,10 @@ type markdown struct {
 	mindex   int
 }
 
-var md = &markdown{
-	content:  new(bytes.Buffer),
-	resource: make(map[string]struct{}),
-}
-
-func (m *markdown) setTitle(appname string) {
+func (m *markdown) SetTitle(appname string) {
 	m.content.WriteString(fmt.Sprintf("## %s\n", appname))
 }
-func (m *markdown) appendMethod(version, resource, action string, in, out reflect.Type) {
+func (m *markdown) AppendMethod(version, resource, action string, in, out reflect.Type) {
 	_, ok := m.resource[resource]
 	if !ok {
 		m.resource[resource] = struct{}{}
@@ -40,6 +40,6 @@ func (m *markdown) appendMethod(version, resource, action string, in, out reflec
 	}
 }
 
-func (m *markdown) genDoc() {
+func (m *markdown) GenDoc() {
 	ioutil.WriteFile("./document.md", m.content.Bytes(), 0644)
 }

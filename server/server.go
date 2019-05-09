@@ -12,12 +12,14 @@ import (
 
 //Service config,如果需要更详细的配置，可以加
 type Config struct {
-	AppName      string
-	DolphinAddr  string
-	Address      string //grpc addr
-	WriteBufSize int
-	ReadBufSize  int
-	ConnTimeout  time.Duration
+	AppName         string
+	DolphinHttpAddr string
+	DolphinGrpcAddr string
+	Address         string //grpc addr
+	WriteBufSize    int
+	ReadBufSize     int
+	ConnTimeout     time.Duration
+	RequestTimeout  time.Duration
 }
 
 var base = new(baseService)
