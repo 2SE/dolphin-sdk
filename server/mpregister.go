@@ -99,7 +99,7 @@ func parseServices(services ...interface{}) error {
 				return fmt.Errorf("the service index of %d and the method %s is err:%v the ", idx, fnm, err)
 			}
 			registerManager.AppendMethod(version, r, action, in, out)
-
+			fmt.Println(version, r, action)
 			f = true
 		}
 		if !f {

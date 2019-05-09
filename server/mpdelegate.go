@@ -56,7 +56,8 @@ func (m *mpdelegate) registerMethod(version, resource, action string, mehtod ref
 func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 	m.tr.Push(req.TraceId) //trace save
 	response := &pb.ServerComResponse{
-		Id: req.Id,
+		Id:      req.Id,
+		TraceId: req.TraceId,
 	}
 	grpcM := m.direction[req.MethodPath.Resource][req.MethodPath.Revision][req.MethodPath.Action]
 	inputs := make([]reflect.Value, 2)

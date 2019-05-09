@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/2se/dolphin-sdk/mock"
+	pb2 "github.com/2se/dolphin-sdk/mock/pb"
 	"github.com/golang/protobuf/ptypes"
 
 	"github.com/2se/dolphin-sdk/pb"
@@ -28,7 +28,7 @@ func main() {
 	}
 	defer conn.Close()
 	c := pb.NewAppServeClient(conn)
-	p := &mock.GetUserRequest{
+	p := &pb2.GetUserRequest{
 		UserId: 1,
 	}
 
@@ -54,7 +54,7 @@ func main() {
 		return
 	}
 	if res.Code == 200 {
-		pmu := &mock.User{}
+		pmu := &pb2.User{}
 		err = ptypes.UnmarshalAny(res.Body, pmu)
 		if err != nil {
 			log.Println(err)

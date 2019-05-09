@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"github.com/2se/dolphin-sdk/pb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
@@ -27,6 +28,7 @@ func Start(c *Config, services ...interface{}) {
 	select {}
 }
 
+//启动服务
 func StartGrpcOnly(c *Config, services ...interface{}) {
 	registerManager.SetAppName(c.AppName)
 	registerManager.SetAddress(c.Address)
@@ -40,6 +42,7 @@ func StartGrpcOnly(c *Config, services ...interface{}) {
 
 //发送对其他GRPC服务的调用请求
 func SendGrpcRequest(path *pb.MethodPath, message proto.Message) (*pb.ServerComResponse, error) {
+	fmt.Println("TraceId ", t.GetTrace())
 	object, err := ptypes.MarshalAny(message)
 	if err != nil {
 		return nil, err

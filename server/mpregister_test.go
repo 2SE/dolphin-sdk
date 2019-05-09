@@ -3,7 +3,7 @@ package server
 import (
 	"errors"
 	"fmt"
-	"github.com/2se/dolphin-sdk/mock"
+	"github.com/2se/dolphin-sdk/mock/pb"
 	"github.com/golang/protobuf/descriptor"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
@@ -18,25 +18,25 @@ var mockService = new(MockService)
 type MockService struct {
 }
 
-func (s *MockService) GetUser_V2(request *mock.GetUserRequest) (*mock.User, error) {
+func (s *MockService) GetUser_V2(request *pb.GetUserRequest) (*pb.User, error) {
 	return nil, nil
 }
-func (s *MockService) GetUser(request *mock.GetUserRequest) (*mock.User, error) {
+func (s *MockService) GetUser(request *pb.GetUserRequest) (*pb.User, error) {
 	return nil, nil
 }
-func (s *MockService) getUser_V1_123(request *mock.GetUserRequest) (*mock.User, error) {
+func (s *MockService) getUser_V1_123(request *pb.GetUserRequest) (*pb.User, error) {
 	return nil, nil
 }
-func (s *MockService) GetUser_V1_123(request *mock.GetUserRequest) (*mock.User, error) {
+func (s *MockService) GetUser_V1_123(request *pb.GetUserRequest) (*pb.User, error) {
 	return nil, nil
 }
 func (s *MockService) Get1(a int) (b int, err error) {
 	return 0, nil
 }
-func (s *MockService) Get2(request *mock.GetUserRequest) (b int, err error) {
+func (s *MockService) Get2(request *pb.GetUserRequest) (b int, err error) {
 	return 0, nil
 }
-func (s *MockService) Get3(*mock.GetUserRequest) (*mock.User, int) {
+func (s *MockService) Get3(*pb.GetUserRequest) (*pb.User, int) {
 	return nil, 0
 }
 
@@ -69,13 +69,13 @@ func TestReflectMethod(t *testing.T) {
 			fmt.Println(err)
 			return
 		}
-		v, _ := parseVersion(a.Name)
-		fmt.Println("version :", v)
+		v, n := parseVersion(a.Name)
+		fmt.Printf("action: %s version :%s\n", n, v)
 		fmt.Println("-------------------")
 	}
 }
 
-func Get(pb *mock.GetUserRequest) (*mock.User, error) {
+func Get(pb *pb.GetUserRequest) (*pb.User, error) {
 	//return &mock.User{UserId: 1, UserName: "Jack", Age: 20}, nil
 	return nil, errors.New("this is error")
 }
@@ -84,7 +84,7 @@ func TestMethodCall(t *testing.T) {
 	typ := reflect.ValueOf(Get)
 
 	val := getAny()
-	tmp := reflect.New(reflect.TypeOf(mock.GetUserRequest{})).Interface().(descriptor.Message)
+	tmp := reflect.New(reflect.TypeOf(pb.GetUserRequest{})).Interface().(descriptor.Message)
 
 	fmt.Println(tmp)
 	err := ptypes.UnmarshalAny(val, tmp)
@@ -103,7 +103,7 @@ func TestMethodCall(t *testing.T) {
 
 func getAny() *any.Any {
 
-	pm := &mock.GetUserRequest{
+	pm := &pb.GetUserRequest{
 		UserId: 10086,
 	}
 	object, _ := ptypes.MarshalAny(pm)

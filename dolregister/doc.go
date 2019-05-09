@@ -23,12 +23,14 @@ func (m *markdown) SetTitle(appname string) {
 	m.content.WriteString(fmt.Sprintf("## %s\n", appname))
 }
 func (m *markdown) AppendMethod(version, resource, action string, in, out reflect.Type) {
+	fmt.Println("aaaa", version, resource, action)
 	_, ok := m.resource[resource]
 	if !ok {
 		m.resource[resource] = struct{}{}
 		m.rindex++
 		m.mindex = 0
 		m.content.WriteString(fmt.Sprintf("### %d. resource: %s\n", m.rindex, resource))
+		ok = true
 	}
 	if ok {
 		m.mindex++
