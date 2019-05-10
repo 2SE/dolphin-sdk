@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+//直接对grpc-server通过grpc-client的方式完成整个请求
+//在没dolphin的情况下测试grpc-server流程可以用此方法
 func main() {
 	//resource: MockUser
 	//action: GetUser version:v2
@@ -37,7 +39,8 @@ func main() {
 		log.Println(err)
 		return
 	}
-
+	//traceId 为客户端生成的随机数
+	//methodPath 在启动服务时会在当前目录下生成document.md，这里生成了接口路径和参数名，具体参数需要结合protobuf查看
 	req := &pb.ClientComRequest{
 		TraceId: "traceId_2123",
 		MethodPath: &pb.MethodPath{

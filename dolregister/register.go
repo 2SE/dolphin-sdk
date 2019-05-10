@@ -37,9 +37,13 @@ func (a *RegisterManager) RegisterServerOnDolpin(address string) error {
 }
 
 type AppInfoer interface {
+	//设置本地服务名
 	SetAppName(appName string)
+	//设置本地服务地址
 	SetAddress(address string)
+	//添加方法到注册池等到注册到dolphin
 	RegisterMethod(version, resource, action string)
+	//将本地服务信息注册到dolphin
 	RegisterServerOnDolpin(address string) error
 }
 

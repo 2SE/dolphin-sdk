@@ -12,14 +12,14 @@ import (
 
 //Service config,如果需要更详细的配置，可以加
 type Config struct {
-	AppName         string
-	DolphinHttpAddr string
-	DolphinGrpcAddr string
-	Address         string //grpc addr
-	WriteBufSize    int
-	ReadBufSize     int
+	AppName         string //服务名称，所有服务名称不可重复
+	DolphinHttpAddr string //dolphin注册服务的端口
+	DolphinGrpcAddr string //dolphin Grpc调度的端口，用于grpc服务之间的互相调用
+	Address         string //grpc服务启动监听端口
+	WriteBufSize    int    //grpc 写容量控制
+	ReadBufSize     int    //grpc 读容量控制
 	ConnTimeout     time.Duration
-	RequestTimeout  time.Duration
+	RequestTimeout  time.Duration //请求时间跨度限制
 }
 
 var base = new(baseService)

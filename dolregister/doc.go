@@ -10,6 +10,7 @@ import (
 type Doc interface {
 	SetTitle(appname string)
 	AppendMethod(version, resource, action string, in, out reflect.Type)
+	//生成document
 	GenDoc()
 }
 type markdown struct {

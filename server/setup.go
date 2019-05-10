@@ -11,6 +11,7 @@ import (
 //grpc server start
 //address: dolphin address  http://www.xxx.com:1111
 //services: business service
+//需要有dolphin的启动
 func Start(c *Config, services ...interface{}) {
 	newDolphinClient(c.DolphinGrpcAddr, c.RequestTimeout)
 	registerManager.SetAppName(c.AppName)
@@ -28,7 +29,7 @@ func Start(c *Config, services ...interface{}) {
 	select {}
 }
 
-//启动服务
+//单独启动服务
 func StartGrpcOnly(c *Config, services ...interface{}) {
 	registerManager.SetAppName(c.AppName)
 	registerManager.SetAddress(c.Address)
