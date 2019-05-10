@@ -54,7 +54,7 @@ func (s *MockUserService) sendRequest() {
 			Revision: "v1",
 			Action:   "GetUser",
 		},
-		&pb2.GetUserRequest{},
+		nil, //&pb2.GetUserRequest{},
 	)
 	if err != nil {
 		fmt.Println("GetUser_V2 err:", err)

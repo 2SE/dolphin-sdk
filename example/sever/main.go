@@ -17,6 +17,6 @@ func main() {
 		DolphinGrpcAddr: "127.0.0.1:9528",
 		RequestTimeout:  time.Second * 30,
 	}
-	//server.Start(c, mock.MkService)
-	server.StartGrpcOnly(c, mock.MkService)
+	server.Start(c, mock.MkService)
+	//server.StartGrpcOnly(c, mock.MkService)
 }

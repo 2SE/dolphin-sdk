@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package user;
+
+//用户
+message User{
+    //用户id
+    int64 user_id=1;
+    //用户名
+    string user_name =2;
+    //年龄
+    int32 age =3;
+    //头像
+    string face = 4;
+}
+
+//根据用户id请求入参
+message GetUserRequest {
+    //用户id
+    int64 user_id =  1;
+}

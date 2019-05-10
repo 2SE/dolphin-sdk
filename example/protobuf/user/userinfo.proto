@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package user;
+
+//用户关系
+message UserRelation{
+    //发起者用户id
+    string from_user_id =1;
+    //目标用户Id
+    string to_user_id =2;
+}
+//通证类型
+enum TokenType {
+    //默认参数（无效），0值尽量不要有任何意义，接收到0值做错误处理
+    Default = 0; 
+    BTC = 1;
+    EHT = 2;
+}
+//用户通证资产
+message TokenBalance{
+    //用户id
+    string user_id =1;
+    //通证类型
+    TokenType  token_type=2;
+    //积分数量
+    double balance =3;
+}
