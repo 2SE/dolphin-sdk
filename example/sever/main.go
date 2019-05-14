@@ -17,6 +17,7 @@ func main() {
 		DolphinGrpcAddr: "127.0.0.1:9528",
 		RequestTimeout:  time.Second * 30,
 	}
+
 	//启动并注册到dolphin
 	//1. 启动dolphin
 	//2. 启动server
