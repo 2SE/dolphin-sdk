@@ -60,7 +60,6 @@ func (s *MockUserService) sendRequest() {
 		fmt.Println("GetUser_V2 err:", err)
 		return
 	}
-	fmt.Printf("traceId:%s code:%d test:%s \n", rep.TraceId, rep.Code, rep.Text)
 	if rep.Code == 200 {
 		pmu := &pb2.User{}
 		ptypes.UnmarshalAny(rep.Body, pmu)

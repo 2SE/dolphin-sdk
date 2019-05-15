@@ -3,9 +3,12 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/2se/dolphin-sdk/log"
 	"github.com/2se/dolphin-sdk/pb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/sirupsen/logrus"
+	"os"
 )
 
 //grpc server start
@@ -13,6 +16,16 @@ import (
 //services: business service
 //需要有dolphin的启动
 func Start(c *Config, services ...interface{}) {
+	if c.logCnf != nil {
+		log.WithDB(c.logCnf)
+
+	}
+	//设置格式
+	logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true, FullTimestamp: true})
+	//设置控制台输出
+	logrus.SetOutput(os.Stdout)
+	//设置落库等级
+	logrus.SetLevel(logrus.TraceLevel)
 	newDolphinClient(c.DolphinGrpcAddr, c.RequestTimeout)
 	registerManager.SetAppName(c.AppName)
 	registerManager.SetAddress(c.Address)
@@ -31,6 +44,15 @@ func Start(c *Config, services ...interface{}) {
 
 //单独启动服务
 func StartGrpcOnly(c *Config, services ...interface{}) {
+	if c.logCnf != nil {
+		log.WithDB(c.logCnf)
+	}
+	//设置格式
+	logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true, FullTimestamp: true})
+	//设置控制台输出
+	logrus.SetOutput(os.Stdout)
+	//设置落库等级
+	logrus.SetLevel(logrus.TraceLevel)
 	registerManager.SetAppName(c.AppName)
 	registerManager.SetAddress(c.Address)
 	registerManager.SetTitle(c.AppName)

@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/2se/dolphin-sdk/log"
 	"github.com/2se/dolphin-sdk/pb"
 	"github.com/sirupsen/logrus"
-	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
 	"time"
@@ -21,6 +21,7 @@ type Config struct {
 	ReadBufSize     int    //grpc 读容量控制
 	ConnTimeout     time.Duration
 	RequestTimeout  time.Duration //请求时间跨度限制
+	logCnf          *log.Config
 }
 
 var base = new(baseService)
@@ -34,14 +35,14 @@ type baseService struct {
 
 //基础请求
 func (b *baseService) Request(ctx context.Context, req *pb.ClientComRequest) (*pb.ServerComResponse, error) {
-	log.WithFields(log.Fields{
+	logrus.WithFields(logrus.Fields{
 		"resource": req.MethodPath.Resource,
 		"version":  req.MethodPath.Revision,
 		"action":   req.MethodPath.Action,
 		"traceId":  req.TraceId,
 	}).Trace(req)
 	response := delegate.invoke(req)
-	log.WithFields(log.Fields{
+	logrus.WithFields(logrus.Fields{
 		"resource": req.MethodPath.Resource,
 		"version":  req.MethodPath.Revision,
 		"action":   req.MethodPath.Action,
