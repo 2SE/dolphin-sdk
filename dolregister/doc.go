@@ -9,7 +9,7 @@ import (
 
 type Doc interface {
 	SetTitle(appname string)
-	AppendMethod(version, resource, action string, in, out reflect.Type)
+	AppendMethod(version, resource, action string, in, out reflect.Type, numIn, numOut int)
 	//生成document
 	GenDoc()
 }
@@ -23,8 +23,7 @@ type markdown struct {
 func (m *markdown) SetTitle(appname string) {
 	m.content.WriteString(fmt.Sprintf("## %s\n", appname))
 }
-func (m *markdown) AppendMethod(version, resource, action string, in, out reflect.Type) {
-	fmt.Println("aaaa", version, resource, action)
+func (m *markdown) AppendMethod(version, resource, action string, in, out reflect.Type, numIn, numOut int) {
 	_, ok := m.resource[resource]
 	if !ok {
 		m.resource[resource] = struct{}{}
@@ -37,8 +36,12 @@ func (m *markdown) AppendMethod(version, resource, action string, in, out reflec
 		m.mindex++
 		m.content.WriteString(fmt.Sprintf("#### %d. action: %s \t version:%s\n", m.mindex, action, version))
 		m.content.WriteString("```\n")
-		m.content.WriteString(fmt.Sprintf("input param:%s\n", in.Name()))
-		m.content.WriteString(fmt.Sprintf("output param:%s\n", out.Name()))
+		if numIn == 2 {
+			m.content.WriteString(fmt.Sprintf("input param:%s\n", in.Name()))
+		}
+		if numOut == 2 {
+			m.content.WriteString(fmt.Sprintf("output param:%s\n", out.Name()))
+		}
 		m.content.WriteString("```\n")
 	}
 }

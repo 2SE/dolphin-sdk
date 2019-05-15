@@ -41,8 +41,8 @@ func (s *MockUserService) getUser_V1_123(request *pb2.GetUserRequest) (*pb2.User
 func (s *MockUserService) Get1(a int) (b int, err error) {
 	return 0, nil
 }
-func (s *MockUserService) Get2(request *pb2.GetUserRequest) (b int, err error) {
-	return 0, nil
+func (s *MockUserService) GetUser_V3(request *pb2.GetUserRequest) (err error) {
+	return nil
 }
 func (s *MockUserService) Get3(*pb2.GetUserRequest) (*pb2.User, int) {
 	return nil, 0

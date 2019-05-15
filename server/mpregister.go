@@ -73,33 +73,47 @@ func parseServices(services ...interface{}) error {
 		f := false
 		for i := 0; i < typ.NumMethod(); i++ {
 			a := typ.Method(i)
-			if a.Func.Type().NumIn() != 2 || a.Func.Type().NumOut() != 2 {
+			numIn := a.Func.Type().NumIn()
+			numOut := a.Func.Type().NumOut()
+			if numIn > 2 || numOut > 2 {
 				continue
 			}
-			if a.Func.Type().In(1).Kind() != reflect.Ptr || a.Func.Type().Out(0).Kind() != reflect.Ptr || a.Func.Type().Out(1).Name() != "error" {
-				continue
+			var in, out reflect.Type
+			if numIn == 2 {
+				if a.Func.Type().In(1).Kind() != reflect.Ptr {
+					continue
+				}
+				in = a.Func.Type().In(1).Elem()
+				p1 := reflect.New(in).Interface().(descriptor.Message)
+				fd1, _ := descriptor.ForMessage(p1)
+				if *fd1.Syntax != syntax {
+					continue
+				}
 			}
-			in := a.Func.Type().In(1).Elem()
-			p1 := reflect.New(in).Interface().(descriptor.Message)
-			fd1, _ := descriptor.ForMessage(p1)
-			if *fd1.Syntax != syntax {
-				continue
-			}
-			out := a.Func.Type().Out(0).Elem()
-			p2 := reflect.New(out).Interface().(descriptor.Message)
-			fd2, _ := descriptor.ForMessage(p2)
-			if *fd2.Syntax != syntax {
-				continue
+			if numOut == 1 {
+				if a.Func.Type().Out(0).Name() != "error" {
+					continue
+				}
+			} else {
+				if a.Func.Type().In(1).Kind() != reflect.Ptr || a.Func.Type().Out(0).Kind() != reflect.Ptr && a.Func.Type().Out(1).Name() != "error" {
+
+					continue
+				}
+				out = a.Func.Type().Out(0).Elem()
+				p2 := reflect.New(out).Interface().(descriptor.Message)
+				fd2, _ := descriptor.ForMessage(p2)
+				if *fd2.Syntax != syntax {
+					continue
+				}
 			}
 			fnm := a.Name
 			version, action := parseVersion(fnm)
 			registerManager.RegisterMethod(version, r, action)
-			err := delegate.registerMethod(version, r, action, a, in, out)
+			err := delegate.registerMethod(version, r, action, a, in, out, numIn, numOut)
 			if err != nil {
 				return fmt.Errorf("the service index of %d and the method %s is err:%v the ", idx, fnm, err)
 			}
-			registerManager.AppendMethod(version, r, action, in, out)
-			fmt.Println(version, r, action)
+			registerManager.AppendMethod(version, r, action, in, out, numIn, numOut)
 			f = true
 		}
 		if !f {
