@@ -9,9 +9,8 @@ import (
 )
 
 func TestLog(t *testing.T) {
-	log, err := NewLog(&Config{
+	err := WithDB(&Config{
 		//是否使用db
-		WithDB: false,
 		//DB配置
 		DBConf: &influx.HTTPConfig{
 			Addr:     "http://localhost:8086",
@@ -36,18 +35,18 @@ func TestLog(t *testing.T) {
 		return
 	}
 	//设置格式
-	log.SetFormatter(&logrus.TextFormatter{ForceColors: true, FullTimestamp: true})
+	logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true, FullTimestamp: true})
 	//设置控制台输出
-	log.SetOutput(os.Stdout)
+	logrus.SetOutput(os.Stdout)
 	//设置落库等级
-	log.SetLevel(logrus.TraceLevel)
-	log.WithFields(logrus.Fields{
+	logrus.SetLevel(logrus.TraceLevel)
+	logrus.WithFields(logrus.Fields{
 		"spanId":   "spanId-123456",
 		"appName":  "user-node1",
 		"resource": "user",
 	}).Trace("This is a trace id: 12345")
 
-	log.WithFields(logrus.Fields{
+	logrus.WithFields(logrus.Fields{
 		"spanId":   "spanId-123457",
 		"appName":  "user-node1",
 		"resource": "user",

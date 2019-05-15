@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/2se/dolphin-sdk/pb"
 	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
 	"time"
@@ -33,7 +34,19 @@ type baseService struct {
 
 //基础请求
 func (b *baseService) Request(ctx context.Context, req *pb.ClientComRequest) (*pb.ServerComResponse, error) {
+	log.WithFields(log.Fields{
+		"resource": req.MethodPath.Resource,
+		"version":  req.MethodPath.Revision,
+		"action":   req.MethodPath.Action,
+		"traceId":  req.TraceId,
+	}).Trace(req)
 	response := delegate.invoke(req)
+	log.WithFields(log.Fields{
+		"resource": req.MethodPath.Resource,
+		"version":  req.MethodPath.Revision,
+		"action":   req.MethodPath.Action,
+		"traceId":  req.TraceId,
+	}).Trace(response)
 	return response, nil
 }
 func (b *baseService) readyGo() {

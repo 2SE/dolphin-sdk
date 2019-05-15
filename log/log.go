@@ -8,8 +8,6 @@ import (
 )
 
 type Config struct {
-	//是否使用db
-	WithDB bool
 	//DB配置
 	DBConf *influx.HTTPConfig
 	//批量写入长度
@@ -24,14 +22,11 @@ type Config struct {
 	Tags []string
 }
 
-func NewLog(c *Config) (*logrus.Logger, error) {
-	log := logrus.New()
-	if c.WithDB {
-		hook, err := NewInfluxHook(c)
-		if err != nil {
-			return nil, err
-		}
-		log.Hooks.Add(hook)
+func WithDB(c *Config) error {
+	hook, err := NewInfluxHook(c)
+	if err != nil {
+		return err
 	}
-	return log, nil
+	logrus.AddHook(hook)
+	return nil
 }
