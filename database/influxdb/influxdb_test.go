@@ -1,7 +1,6 @@
 package influxdb
 
 import (
-	"fmt"
 	client "github.com/influxdata/influxdb1-client/v2"
 	"testing"
 	"time"
@@ -21,8 +20,8 @@ func TestNewInfluxdb(t *testing.T) {
 	}
 	q := client.NewQuery("select * from tracelog", "hashhash", "ns")
 	if response, err := cli.Query(q); err == nil && response.Error() == nil {
-		fmt.Println(response.Results)
+		t.Log(response.Results)
 	} else {
-		fmt.Println(err)
+		t.Error(err)
 	}
 }
