@@ -95,7 +95,7 @@ func parseServices(services ...interface{}) error {
 					continue
 				}
 			} else {
-				if a.Func.Type().In(1).Kind() != reflect.Ptr || a.Func.Type().Out(0).Kind() != reflect.Ptr && a.Func.Type().Out(1).Name() != "error" {
+				if a.Func.Type().Out(0).Kind() != reflect.Ptr && a.Func.Type().Out(1).Name() != "error" {
 
 					continue
 				}
