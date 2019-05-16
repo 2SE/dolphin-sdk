@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	pb2 "github.com/2se/dolphin-sdk/mock/pb"
 	"github.com/golang/protobuf/ptypes"
 
@@ -29,6 +30,7 @@ func main() {
 		return
 	}
 	defer conn.Close()
+
 	c := pb.NewAppServeClient(conn)
 	p := &pb2.GetUserRequest{
 		UserId: 1,
@@ -55,6 +57,10 @@ func main() {
 	if err != nil {
 		log.Println(err)
 		return
+	}
+
+	for {
+		fmt.Println(conn.GetState())
 	}
 	if res.Code == 200 {
 		pmu := &pb2.User{}

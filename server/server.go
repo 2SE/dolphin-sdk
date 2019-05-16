@@ -21,7 +21,7 @@ type Config struct {
 	ReadBufSize     int    //grpc 读容量控制
 	ConnTimeout     time.Duration
 	RequestTimeout  time.Duration //请求时间跨度限制
-	logCnf          *log.Config
+	LogCnf          *log.Config
 }
 
 var base = new(baseService)

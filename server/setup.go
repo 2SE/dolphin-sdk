@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/2se/dolphin-sdk/log"
 	"github.com/2se/dolphin-sdk/pb"
 	"github.com/golang/protobuf/proto"
@@ -16,8 +15,8 @@ import (
 //services: business service
 //需要有dolphin的启动
 func Start(c *Config, services ...interface{}) {
-	if c.logCnf != nil {
-		log.WithDB(c.logCnf)
+	if c.LogCnf != nil {
+		log.WithDB(c.LogCnf)
 
 	}
 	//设置格式
@@ -44,8 +43,8 @@ func Start(c *Config, services ...interface{}) {
 
 //单独启动服务
 func StartGrpcOnly(c *Config, services ...interface{}) {
-	if c.logCnf != nil {
-		log.WithDB(c.logCnf)
+	if c.LogCnf != nil {
+		log.WithDB(c.LogCnf)
 	}
 	//设置格式
 	logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true, FullTimestamp: true})
@@ -65,7 +64,6 @@ func StartGrpcOnly(c *Config, services ...interface{}) {
 
 //发送对其他GRPC服务的调用请求
 func SendGrpcRequest(path *pb.MethodPath, message proto.Message) (*pb.ServerComResponse, error) {
-	fmt.Println("TraceId ", t.GetTrace())
 	object, err := ptypes.MarshalAny(message)
 	if err != nil {
 		return nil, err
