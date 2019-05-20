@@ -14,7 +14,7 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
-	github.com/segmentio/kafka-go v0.2.2 // indirect
+	github.com/segmentio/kafka-go v0.2.2
 	github.com/sirupsen/logrus v1.4.1
 	github.com/stretchr/testify v1.3.0
 	github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65 // indirect
