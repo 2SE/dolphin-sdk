@@ -17,7 +17,7 @@ type Config struct {
 	MaxWait   time.Duration
 }
 
-func ConsumersInit(cnf *Config) *kafka.Reader {
+func NewKafka(cnf *Config) *kafka.Reader {
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:   cnf.Brokers,
 		GroupID:   cnf.GroupID,
