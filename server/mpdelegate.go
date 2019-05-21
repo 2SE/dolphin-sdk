@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/2se/dolphin-sdk/pb"
-	"github.com/2se/dolphin-sdk/trace"
 	"github.com/golang/protobuf/descriptor"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
@@ -14,7 +13,6 @@ import (
 
 var (
 	delegate = &mpdelegate{
-		tr:        trace.GetTracer(),
 		services:  make(map[string]reflect.Value),
 		direction: make(map[string]map[string]map[string]*grpcMethod),
 	}
@@ -37,7 +35,6 @@ type grpcMethod struct {
 }
 
 type mpdelegate struct {
-	tr        trace.Tracer
 	services  map[string]reflect.Value
 	direction map[string]map[string]map[string]*grpcMethod
 }
@@ -78,14 +75,13 @@ func catchPanic(req *pb.ClientComRequest) {
 	}
 }
 func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
-	defer m.tr.Release()
 	defer catchPanic(req)
-	m.tr.Push(req.TraceId, req.Id) //trace save
 	response := &pb.ServerComResponse{
 		Id:      req.Id,
 		TraceId: req.TraceId,
 		Code:    200,
 	}
+	fmt.Println(m)
 	grpcM := m.direction[req.MethodPath.Resource][req.MethodPath.Revision][req.MethodPath.Action]
 	inputs := make([]reflect.Value, grpcM.numIn)
 	inputs[0] = m.services[req.MethodPath.Resource]
@@ -99,6 +95,7 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 		}
 		inputs[1] = reflect.ValueOf(tmp)
 	}
+
 	vals := grpcM.method.Func.Call(inputs)
 
 	errIndx := 0

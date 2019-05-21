@@ -1,7 +1,8 @@
 package trace
 
-import (
+/*import (
 	"errors"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"runtime"
 	"sync"
@@ -17,7 +18,7 @@ var (
 )
 
 type Tracer interface {
-	Push(traceId, userId string)
+	Push(traceId, userId string, ptr uintptr)
 	Release()
 	GetTrace() (traceId string)
 	GetUserId() (string, error)
@@ -146,22 +147,25 @@ Loop:
 		goto Loop
 	}
 	tr := t.tmap[fn.Entry()]
-	if tr != nil {
+
+	if tr == nil {
 		return emptyStr, ErrSessionBug
 	}
 	return tr.userId, nil
 }
 
-func (t *traceCache) Push(traceId, userId string) {
+func (t *traceCache) Push(traceId, userId string, pointer uintptr) {
 	if !t.ready {
 		t.initCurIndex()
 	}
 	pc, _, _, _ := runtime.Caller(invokeSkipForPush)
 	ptr := runtime.FuncForPC(pc).Entry()
+	fmt.Println(pointer)
+
 	t.receiveCh <- &trace{ptr, traceId, userId}
 }
 func (t *traceCache) Release() {
-	pc, _, _, _ := runtime.Caller(2)
+	pc, _, _, _ := runtime.Caller(1)
 	ptr := runtime.FuncForPC(pc).Entry()
 	t.removeCh <- ptr
 }
@@ -178,3 +182,4 @@ func (t *traceCache) rloop() {
 		}
 	}()
 }
+*/

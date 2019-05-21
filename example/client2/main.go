@@ -52,8 +52,20 @@ func main() {
 		},
 		//Params: object,
 	}
+	req2 := &pb.ClientComRequest{
+		TraceId: "traceId_2123",
+		Id:      "userid321",
+		MethodPath: &pb.MethodPath{
+			Resource: "MockUser", //"MockUser",
+			Revision: "v1",       //"v2",
+			Action:   "NotParam", //"GetUser",  //"FindUserByTel",
+		},
+		//Params: object,
+	}
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
-	res, err := c.Request(ctx, req)
+	//res, err := c.Request(ctx, req)
+	go c.Request(ctx, req2)
+	go c.Request(ctx, req)
 	if err != nil {
 		log.Println(err)
 		return
@@ -62,16 +74,16 @@ func main() {
 	/*for {
 		fmt.Println(conn.GetState())
 	}*/
-	if res.Code == 200 {
-		//pmu := &pb2.User{}
-		/*pmu := &pb2.FindUserByTelRes{}
-		err = ptypes.UnmarshalAny(res.Body, pmu)
-		if err != nil {
-			log.Println(err)
-			return
-		}*/
-		//log.Println(pmu)
-		log.Println("success")
-	}
-
+	//if res.Code == 200 {
+	//pmu := &pb2.User{}
+	/*pmu := &pb2.FindUserByTelRes{}
+	err = ptypes.UnmarshalAny(res.Body, pmu)
+	if err != nil {
+		log.Println(err)
+		return
+	}*/
+	//log.Println(pmu)
+	log.Println("success")
+	//}
+	time.Sleep(time.Second * 2)
 }

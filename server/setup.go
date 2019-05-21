@@ -63,20 +63,16 @@ func StartGrpcOnly(c *Config, services ...interface{}) {
 }
 
 //发送对其他GRPC服务的调用请求
-func SendGrpcRequest(path *pb.MethodPath, message proto.Message) (*pb.ServerComResponse, error) {
+func SendGrpcRequest(path *pb.MethodPath, traceId string, message proto.Message) (*pb.ServerComResponse, error) {
 	object, err := ptypes.MarshalAny(message)
 	if err != nil {
 		return nil, err
 	}
 	req := &pb.ClientComRequest{
-		TraceId:    t.GetTrace(),
+		TraceId:    traceId,
 		MethodPath: path,
 		Params:     object,
 	}
 	ctx, _ := context.WithTimeout(context.Background(), requestTimeout)
 	return dolphinClient.Request(ctx, req)
-}
-
-func GetUserId() (string, error) {
-	return t.GetUserId()
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/2se/dolphin-sdk/pb"
-	"github.com/2se/dolphin-sdk/trace"
 	"google.golang.org/grpc"
 	"time"
 )
@@ -12,7 +11,6 @@ import (
 var (
 	dolphinClient  pb.AppServeClient
 	requestTimeout time.Duration
-	t              = trace.GetTracer()
 )
 
 func newDolphinClient(dolphinAddr string, timeout time.Duration) {
