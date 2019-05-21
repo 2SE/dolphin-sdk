@@ -47,6 +47,9 @@ func (s *MockUserService) GetUser_V3(request *pb2.GetUserRequest) (err error) {
 func (s *MockUserService) Get3() (*pb2.User, int) {
 	return nil, 0
 }
+func (s *MockUserService) NotParam() error {
+	return nil
+}
 func (s *MockUserService) sendRequest() {
 	rep, err := server.SendGrpcRequest(
 		&pb.MethodPath{

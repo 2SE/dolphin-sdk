@@ -68,15 +68,15 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 	}
 	grpcM := m.direction[req.MethodPath.Resource][req.MethodPath.Revision][req.MethodPath.Action]
 	inputs := make([]reflect.Value, grpcM.numIn)
-	tmp := reflect.New(grpcM.argin).Interface().(descriptor.Message)
-	err := ptypes.UnmarshalAny(req.Params, tmp)
-	if err != nil {
-		response.Code = 400
-		response.Text = ErrParamNotSpecified.Error()
-		return response
-	}
 	inputs[0] = m.services[req.MethodPath.Resource]
 	if grpcM.numIn == 2 {
+		tmp := reflect.New(grpcM.argin).Interface().(descriptor.Message)
+		err := ptypes.UnmarshalAny(req.Params, tmp)
+		if err != nil {
+			response.Code = 400
+			response.Text = ErrParamNotSpecified.Error()
+			return response
+		}
 		inputs[1] = reflect.ValueOf(tmp)
 	}
 	vals := grpcM.method.Func.Call(inputs)

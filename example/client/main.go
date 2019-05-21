@@ -2,10 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/2se/dolphin-sdk/example/client/pb2"
-
-	"github.com/golang/protobuf/ptypes"
-
 	"github.com/2se/dolphin-sdk/pb"
 
 	"google.golang.org/grpc"
@@ -24,7 +20,7 @@ func main() {
 	ctx1, _ := context.WithTimeout(context.Background(), time.Second*5)
 	//defer cel()
 	//conn, err := grpc.DialContext(ctx1, address, grpc.WithBlock(), grpc.WithInsecure())
-	conn, err := grpc.DialContext(ctx1, "192.168.9.130:9528", grpc.WithBlock(), grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx1, "192.168.10.169:8848", grpc.WithBlock(), grpc.WithInsecure())
 	if err != nil {
 		log.Println("did not connect: %v", err)
 		return
@@ -36,24 +32,24 @@ func main() {
 		UserId: 1,
 	}*/
 
-	p := &pb2.FindUserByTelReq{
+	/*p := &pb2.FindUserByTelReq{
 		Tel: "13111111111",
-	}
-	object, err := ptypes.MarshalAny(p)
+	}*/
+	/*object, err := ptypes.MarshalAny(p)
 	if err != nil {
 		log.Println(err)
 		return
-	}
+	}*/
 	//traceId 为客户端生成的随机数
 	//methodPath 在启动服务时会在当前目录下生成document.md，这里生成了接口路径和参数名，具体参数需要结合protobuf查看
 	req := &pb.ClientComRequest{
 		TraceId: "traceId_2123",
 		MethodPath: &pb.MethodPath{
-			Resource: "MockUser",      //"MockUser",
-			Revision: "v1",            //"v2",
-			Action:   "FindUserByTel", //"GetUser",  //"FindUserByTel",
+			Resource: "MockUser", //"MockUser",
+			Revision: "v1",       //"v2",
+			Action:   "NotParam", //"GetUser",  //"FindUserByTel",
 		},
-		Params: object,
+		//Params: object,
 	}
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
 	res, err := c.Request(ctx, req)
@@ -67,13 +63,14 @@ func main() {
 	}*/
 	if res.Code == 200 {
 		//pmu := &pb2.User{}
-		pmu := &pb2.FindUserByTelRes{}
+		/*pmu := &pb2.FindUserByTelRes{}
 		err = ptypes.UnmarshalAny(res.Body, pmu)
 		if err != nil {
 			log.Println(err)
 			return
-		}
-		log.Println(pmu)
+		}*/
+		//log.Println(pmu)
+		log.Println("success")
 	}
 
 }
