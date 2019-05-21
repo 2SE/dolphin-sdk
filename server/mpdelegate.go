@@ -2,12 +2,13 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"github.com/2se/dolphin-sdk/pb"
 	"github.com/2se/dolphin-sdk/trace"
 	"github.com/golang/protobuf/descriptor"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-
+	"github.com/sirupsen/logrus"
 	"reflect"
 )
 
@@ -20,6 +21,11 @@ var (
 
 	ErrOverloadNotSupported = errors.New("The registered service does not support overloading of version,resource,action")
 	ErrParamNotSpecified    = errors.New("Parameter not specified")
+)
+
+const (
+	panicCode = "1"
+	panicStr  = "An unknowable error"
 )
 
 type grpcMethod struct {
@@ -59,7 +65,21 @@ func (m *mpdelegate) registerMethod(version, resource, action string, mehtod ref
 	}
 	return nil
 }
+func catchPanic(req *pb.ClientComRequest) {
+	if err := recover(); err != nil {
+		logrus.WithFields(logrus.Fields{
+			"resource": req.MethodPath.Resource,
+			"version":  req.MethodPath.Revision,
+			"action":   req.MethodPath.Action,
+			"traceId":  req.TraceId,
+			"panic":    panicCode,
+		}).Error(err)
+
+	}
+}
 func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
+	defer m.tr.Release()
+	defer catchPanic(req)
 	m.tr.Push(req.TraceId, req.Id) //trace save
 	response := &pb.ServerComResponse{
 		Id:      req.Id,
@@ -74,13 +94,13 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 		err := ptypes.UnmarshalAny(req.Params, tmp)
 		if err != nil {
 			response.Code = 400
-			response.Text = ErrParamNotSpecified.Error()
+			response.Text = fmt.Sprintf("%s,and the param type is %s", ErrParamNotSpecified.Error(), grpcM.argin.String())
 			return response
 		}
 		inputs[1] = reflect.ValueOf(tmp)
 	}
 	vals := grpcM.method.Func.Call(inputs)
-	m.tr.Release()
+
 	errIndx := 0
 	if len(vals) == 2 {
 		errIndx = 1

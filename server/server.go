@@ -42,12 +42,19 @@ func (b *baseService) Request(ctx context.Context, req *pb.ClientComRequest) (*p
 		"traceId":  req.TraceId,
 	}).Trace(req)
 	response := delegate.invoke(req)
-	logrus.WithFields(logrus.Fields{
-		"resource": req.MethodPath.Resource,
-		"version":  req.MethodPath.Revision,
-		"action":   req.MethodPath.Action,
-		"traceId":  req.TraceId,
-	}).Trace(response)
+	if response == nil {
+		response = &pb.ServerComResponse{
+			Code: 500,
+			Text: panicStr,
+		}
+	} else {
+		logrus.WithFields(logrus.Fields{
+			"resource": req.MethodPath.Resource,
+			"version":  req.MethodPath.Revision,
+			"action":   req.MethodPath.Action,
+			"traceId":  req.TraceId,
+		}).Trace(response)
+	}
 	return response, nil
 }
 func (b *baseService) readyGo() {

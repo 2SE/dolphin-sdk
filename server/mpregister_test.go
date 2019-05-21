@@ -150,4 +150,6 @@ func TestVersionReplace(t *testing.T) {
 	version := "V1_123"
 	newv := strings.ToLower(strings.ReplaceAll(version, "_", "."))
 	fmt.Println(newv)
+
+	fmt.Println(reflect.TypeOf(pb.GetUserRequest{}).String())
 }
