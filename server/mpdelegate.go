@@ -60,7 +60,7 @@ func (m *mpdelegate) registerMethod(version, resource, action string, mehtod ref
 	return nil
 }
 func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
-	m.tr.Push(req.TraceId) //trace save
+	m.tr.Push(req.TraceId, req.Id) //trace save
 	response := &pb.ServerComResponse{
 		Id:      req.Id,
 		TraceId: req.TraceId,

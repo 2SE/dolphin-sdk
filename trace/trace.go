@@ -1,15 +1,26 @@
 package trace
 
 import (
+	"errors"
 	"github.com/sirupsen/logrus"
 	"runtime"
 	"sync"
 )
 
+const (
+	emptyTrace = "emptyTrace"
+	emptyStr   = ""
+)
+
+var (
+	ErrSessionBug = errors.New("session cache error")
+)
+
 type Tracer interface {
-	Push(traceId string)
+	Push(traceId, userId string)
 	Release()
 	GetTrace() (traceId string)
+	GetUserId() (string, error)
 }
 
 const (
@@ -33,7 +44,7 @@ func init() {
 
 func initTraceCache() {
 	tc = &traceCache{
-		tmap:      make(map[uintptr]string),
+		tmap:      make(map[uintptr]*trace),
 		receiveCh: make(chan *trace, 50),
 		removeCh:  make(chan uintptr, 50),
 		callers:   make(map[string]int),
@@ -43,6 +54,7 @@ func initTraceCache() {
 type trace struct {
 	ptr     uintptr
 	traceId string
+	userId  string
 }
 
 type traceCache struct {
@@ -52,7 +64,7 @@ type traceCache struct {
 	callers map[string]int
 	ready   bool
 
-	tmap      map[uintptr]string
+	tmap      map[uintptr]*trace
 	receiveCh chan *trace
 	removeCh  chan uintptr
 	m         sync.Mutex
@@ -109,20 +121,44 @@ Loop:
 		}
 		goto Loop
 	}
-	return t.tmap[fn.Entry()]
+	tr := t.tmap[fn.Entry()]
+	if tr != nil {
+		return emptyTrace
+	}
+	return tr.traceId
+}
+func (t *traceCache) GetUserId() (string, error) {
+	skip := baseCalen - 2 //The shortest displacement
+Loop:
+	//fmt.Println(i)
+	ptr, _, _, _ := runtime.Caller(skip)
+	fn := runtime.FuncForPC(ptr)
+	fnam := fn.Name()
+	if fnam != t.curName {
+		idx, ok := t.callers[fnam]
+		if !ok {
+			//not arrive
+			skip = skip + baseCalen
+
+		} else {
+			skip = skip - idx + t.callers[t.curName]
+		}
+		goto Loop
+	}
+	tr := t.tmap[fn.Entry()]
+	if tr != nil {
+		return emptyStr, ErrSessionBug
+	}
+	return tr.userId, nil
 }
 
-func (t *traceCache) get(ptr uintptr) string {
-	return t.tmap[ptr]
-}
-
-func (t *traceCache) Push(traceId string) {
+func (t *traceCache) Push(traceId, userId string) {
 	if !t.ready {
 		t.initCurIndex()
 	}
 	pc, _, _, _ := runtime.Caller(invokeSkipForPush)
 	ptr := runtime.FuncForPC(pc).Entry()
-	t.receiveCh <- &trace{ptr, traceId}
+	t.receiveCh <- &trace{ptr, traceId, userId}
 }
 func (t *traceCache) Release() {
 	pc, _, _, _ := runtime.Caller(2)
@@ -133,7 +169,7 @@ func (t *traceCache) Release() {
 func (t *traceCache) rloop() {
 	go func() {
 		for ch := range t.receiveCh {
-			t.tmap[ch.ptr] = ch.traceId
+			t.tmap[ch.ptr] = ch
 		}
 	}()
 	go func() {

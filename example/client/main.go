@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
-	pb2 "github.com/2se/dolphin-sdk/mock/pb"
+	"github.com/2se/dolphin-sdk/example/client/pb2"
+
 	"github.com/golang/protobuf/ptypes"
 
 	"github.com/2se/dolphin-sdk/pb"
@@ -24,7 +24,7 @@ func main() {
 	ctx1, _ := context.WithTimeout(context.Background(), time.Second*5)
 	//defer cel()
 	//conn, err := grpc.DialContext(ctx1, address, grpc.WithBlock(), grpc.WithInsecure())
-	conn, err := grpc.DialContext(ctx1, "127.0.0.1:8848", grpc.WithBlock(), grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx1, "192.168.9.130:9528", grpc.WithBlock(), grpc.WithInsecure())
 	if err != nil {
 		log.Println("did not connect: %v", err)
 		return
@@ -32,10 +32,13 @@ func main() {
 	defer conn.Close()
 
 	c := pb.NewAppServeClient(conn)
-	p := &pb2.GetUserRequest{
+	/*p := &pb2.GetUserRequest{
 		UserId: 1,
-	}
+	}*/
 
+	p := &pb2.FindUserByTelReq{
+		Tel: "13111111111",
+	}
 	object, err := ptypes.MarshalAny(p)
 	if err != nil {
 		log.Println(err)
@@ -46,9 +49,9 @@ func main() {
 	req := &pb.ClientComRequest{
 		TraceId: "traceId_2123",
 		MethodPath: &pb.MethodPath{
-			Resource: "MockUser",
-			Revision: "v2",
-			Action:   "GetUser",
+			Resource: "MockUser",      //"MockUser",
+			Revision: "v1",            //"v2",
+			Action:   "FindUserByTel", //"GetUser",  //"FindUserByTel",
 		},
 		Params: object,
 	}
@@ -59,11 +62,12 @@ func main() {
 		return
 	}
 
-	for {
+	/*for {
 		fmt.Println(conn.GetState())
-	}
+	}*/
 	if res.Code == 200 {
-		pmu := &pb2.User{}
+		//pmu := &pb2.User{}
+		pmu := &pb2.FindUserByTelRes{}
 		err = ptypes.UnmarshalAny(res.Body, pmu)
 		if err != nil {
 			log.Println(err)

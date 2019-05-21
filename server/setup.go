@@ -76,3 +76,7 @@ func SendGrpcRequest(path *pb.MethodPath, message proto.Message) (*pb.ServerComR
 	ctx, _ := context.WithTimeout(context.Background(), requestTimeout)
 	return dolphinClient.Request(ctx, req)
 }
+
+func GetUserId() (string, error) {
+	return t.GetUserId()
+}

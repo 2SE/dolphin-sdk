@@ -17,7 +17,7 @@ type MockUserService struct {
 //GetUser v2
 func (s *MockUserService) GetUser_V2(request *pb2.GetUserRequest) (*pb2.User, error) {
 	//SendRequest()
-	s.sendRequest()
+	//s.sendRequest()
 	if request.UserId == 1 {
 		return &pb2.User{UserId: 1, UserName: "Dolphin", Age: 25}, nil
 	} else {
@@ -44,7 +44,7 @@ func (s *MockUserService) Get1(a int) (b int, err error) {
 func (s *MockUserService) GetUser_V3(request *pb2.GetUserRequest) (err error) {
 	return nil
 }
-func (s *MockUserService) Get3(*pb2.GetUserRequest) (*pb2.User, int) {
+func (s *MockUserService) Get3() (*pb2.User, int) {
 	return nil, 0
 }
 func (s *MockUserService) sendRequest() {
