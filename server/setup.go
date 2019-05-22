@@ -24,7 +24,12 @@ func Start(c *Config, services ...interface{}) {
 	//设置控制台输出
 	logrus.SetOutput(os.Stdout)
 	//设置落库等级
-	logrus.SetLevel(logrus.TraceLevel)
+	if c.LogLevel != 0 {
+		logrus.SetLevel(c.LogLevel)
+	} else {
+		logrus.SetLevel(logrus.InfoLevel)
+	}
+
 	newDolphinClient(c.DolphinGrpcAddr, c.RequestTimeout)
 	registerManager.SetAppName(c.AppName)
 	registerManager.SetAddress(c.Address)
@@ -51,7 +56,11 @@ func StartGrpcOnly(c *Config, services ...interface{}) {
 	//设置控制台输出
 	logrus.SetOutput(os.Stdout)
 	//设置落库等级
-	logrus.SetLevel(logrus.TraceLevel)
+	if c.LogLevel != 0 {
+		logrus.SetLevel(c.LogLevel)
+	} else {
+		logrus.SetLevel(logrus.InfoLevel)
+	}
 	registerManager.SetAppName(c.AppName)
 	registerManager.SetAddress(c.Address)
 	registerManager.SetTitle(c.AppName)

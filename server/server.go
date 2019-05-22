@@ -22,6 +22,7 @@ type Config struct {
 	ConnTimeout     time.Duration
 	RequestTimeout  time.Duration //请求时间跨度限制
 	LogCnf          *log.Config
+	LogLevel        logrus.Level
 }
 
 var base = new(baseService)
