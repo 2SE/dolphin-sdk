@@ -42,6 +42,7 @@ func (b *baseService) Request(ctx context.Context, req *pb.ClientComRequest) (*p
 		"action":   req.MethodPath.Action,
 		"traceId":  req.TraceId,
 	}).Trace(req)
+
 	response := delegate.invoke(req)
 	if response == nil {
 		response = &pb.ServerComResponse{

@@ -82,7 +82,6 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 		TraceId: req.TraceId,
 		Code:    200,
 	}
-	fmt.Println(m)
 	grpcM := m.direction[req.MethodPath.Resource][req.MethodPath.Revision][req.MethodPath.Action]
 	inputs := make([]reflect.Value, grpcM.numIn)
 	inputs[0] = m.services[req.MethodPath.Resource]
