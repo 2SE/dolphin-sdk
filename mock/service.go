@@ -2,11 +2,9 @@ package mock
 
 import (
 	"errors"
-	"fmt"
 	pb2 "github.com/2se/dolphin-sdk/mock/pb"
 	"github.com/2se/dolphin-sdk/pb"
-	"github.com/2se/dolphin-sdk/server"
-	"github.com/golang/protobuf/ptypes"
+	"github.com/sirupsen/logrus"
 )
 
 var MkService = new(MockUserService)
@@ -41,7 +39,8 @@ func (s *MockUserService) getUser_V1_123(request *pb2.GetUserRequest) (*pb2.User
 func (s *MockUserService) Get1(a int) (b int, err error) {
 	return 0, nil
 }
-func (s *MockUserService) GetUser_V3(request *pb2.GetUserRequest) (err error) {
+func (s *MockUserService) GetUser_V3(info *pb.CurrentInfo, request *pb2.GetUserRequest) (err error) {
+	logrus.Info(info)
 	return nil
 }
 func (s *MockUserService) Get3() (*pb2.User, int) {
@@ -51,23 +50,23 @@ func (s *MockUserService) NotParam() error {
 	return nil
 }
 func (s *MockUserService) sendRequest() {
-	rep, err := server.SendGrpcRequest(
-		&pb.MethodPath{
-			Resource: "MockUser",
-			Revision: "v1",
-			Action:   "GetUser",
-		},
-		"", "", nil, //&pb2.GetUserRequest{},
+	/*	rep, err := server.SendGrpcRequest(
+			&pb.MethodPath{
+				Resource: "MockUser",
+				Revision: "v1",
+				Action:   "GetUser",
+			},
+		, //&pb2.GetUserRequest{},
 
-	)
-	if err != nil {
-		fmt.Println("GetUser_V2 err:", err)
-		return
-	}
-	if rep.Code == 200 {
-		pmu := &pb2.User{}
-		ptypes.UnmarshalAny(rep.Body, pmu)
-		fmt.Println("response body :", pmu.String())
-	}
+		)
+		if err != nil {
+			fmt.Println("GetUser_V2 err:", err)
+			return
+		}
+		if rep.Code == 200 {
+			pmu := &pb2.User{}
+			ptypes.UnmarshalAny(rep.Body, pmu)
+			fmt.Println("response body :", pmu.String())
+		}*/
 
 }

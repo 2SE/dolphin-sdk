@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	pb2 "github.com/2se/dolphin-sdk/example/client/pb"
 	"github.com/2se/dolphin-sdk/pb"
+	"github.com/golang/protobuf/ptypes"
 
 	"google.golang.org/grpc"
 	"log"
@@ -20,7 +22,7 @@ func main() {
 	ctx1, _ := context.WithTimeout(context.Background(), time.Second*5)
 	//defer cel()
 	//conn, err := grpc.DialContext(ctx1, address, grpc.WithBlock(), grpc.WithInsecure())
-	conn, err := grpc.DialContext(ctx1, "192.168.10.169:8848", grpc.WithBlock(), grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx1, "127.0.0.1:8848", grpc.WithBlock(), grpc.WithInsecure())
 	if err != nil {
 		log.Println("did not connect: %v", err)
 		return
@@ -28,18 +30,18 @@ func main() {
 	defer conn.Close()
 
 	c := pb.NewAppServeClient(conn)
-	/*p := &pb2.GetUserRequest{
+	p := &pb2.GetUserRequest{
 		UserId: 1,
-	}*/
+	}
 
 	/*p := &pb2.FindUserByTelReq{
 		Tel: "13111111111",
 	}*/
-	/*object, err := ptypes.MarshalAny(p)
+	object, err := ptypes.MarshalAny(p)
 	if err != nil {
 		log.Println(err)
 		return
-	}*/
+	}
 	//traceId 为客户端生成的随机数
 	//methodPath 在启动服务时会在当前目录下生成document.md，这里生成了接口路径和参数名，具体参数需要结合protobuf查看
 	req := &pb.ClientComRequest{
@@ -47,10 +49,10 @@ func main() {
 		Id:      "userid123",
 		MethodPath: &pb.MethodPath{
 			Resource: "MockUser", //"MockUser",
-			Revision: "v1",       //"v2",
-			Action:   "NotParam", //"GetUser",  //"FindUserByTel",
+			Revision: "v3",       //"v2",
+			Action:   "GetUser",  //"GetUser",  //"FindUserByTel",
 		},
-		//Params: object,
+		Params: object,
 	}
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
 	res, err := c.Request(ctx, req)

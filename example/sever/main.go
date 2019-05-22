@@ -9,7 +9,7 @@ import (
 func main() {
 	c := &server.Config{
 		AppName:         "userApp",
-		Address:         "192.168.10.169:8848",
+		Address:         "127.0.0.1:8848",
 		WriteBufSize:    32 * 1024,
 		ReadBufSize:     32 * 1024,
 		ConnTimeout:     time.Second * 10,

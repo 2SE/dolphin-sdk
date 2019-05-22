@@ -16,6 +16,7 @@ var (
 		services:  make(map[string]reflect.Value),
 		direction: make(map[string]map[string]map[string]*grpcMethod),
 	}
+	curType = reflect.TypeOf(pb.CurrentInfo{})
 
 	ErrOverloadNotSupported = errors.New("The registered service does not support overloading of version,resource,action")
 	ErrParamNotSpecified    = errors.New("Parameter not specified")
@@ -30,7 +31,7 @@ type grpcMethod struct {
 	method reflect.Method
 	numIn  int
 	numOut int
-	argin  reflect.Type
+	argins []reflect.Type
 	argout reflect.Type
 }
 
@@ -42,7 +43,7 @@ type mpdelegate struct {
 func (m *mpdelegate) registerService(resource string, value reflect.Value) {
 	m.services[resource] = value
 }
-func (m *mpdelegate) registerMethod(version, resource, action string, mehtod reflect.Method, in, out reflect.Type, numIn, numOut int) error {
+func (m *mpdelegate) registerMethod(version, resource, action string, mehtod reflect.Method, ins []reflect.Type, out reflect.Type, numIn, numOut int) error {
 	if m.direction[resource] == nil {
 		m.direction[resource] = make(map[string]map[string]*grpcMethod)
 	}
@@ -55,7 +56,7 @@ func (m *mpdelegate) registerMethod(version, resource, action string, mehtod ref
 
 	m.direction[resource][version][action] = &grpcMethod{
 		method: mehtod,
-		argin:  in,
+		argins: ins,
 		argout: out,
 		numIn:  numIn,
 		numOut: numOut,
@@ -85,19 +86,27 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 	grpcM := m.direction[req.MethodPath.Resource][req.MethodPath.Revision][req.MethodPath.Action]
 	inputs := make([]reflect.Value, grpcM.numIn)
 	inputs[0] = m.services[req.MethodPath.Resource]
-	if grpcM.numIn == 2 {
-		tmp := reflect.New(grpcM.argin).Interface().(descriptor.Message)
-		err := ptypes.UnmarshalAny(req.Params, tmp)
-		if err != nil {
-			response.Code = 400
-			response.Text = fmt.Sprintf("%s,and the param type is %s", ErrParamNotSpecified.Error(), grpcM.argin.String())
-			return response
+	if grpcM.numIn > 1 {
+		for k, v := range grpcM.argins {
+			if v == curType {
+				curInfo := &pb.CurrentInfo{
+					TraceId: req.TraceId,
+					UserId:  req.Id,
+				}
+				inputs[k+1] = reflect.ValueOf(curInfo)
+			} else {
+				tmp := reflect.New(v).Interface().(descriptor.Message)
+				err := ptypes.UnmarshalAny(req.Params, tmp)
+				if err != nil {
+					response.Code = 400
+					response.Text = fmt.Sprintf("%s,and the param type is %s", ErrParamNotSpecified.Error(), v.String())
+					return response
+				}
+				inputs[k+1] = reflect.ValueOf(tmp)
+			}
 		}
-		inputs[1] = reflect.ValueOf(tmp)
 	}
-
 	vals := grpcM.method.Func.Call(inputs)
-
 	errIndx := 0
 	if len(vals) == 2 {
 		errIndx = 1

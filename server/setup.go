@@ -63,14 +63,14 @@ func StartGrpcOnly(c *Config, services ...interface{}) {
 }
 
 //发送对其他GRPC服务的调用请求
-func SendGrpcRequest(path *pb.MethodPath, traceId, userId string, message proto.Message) (*pb.ServerComResponse, error) {
+func SendGrpcRequest(path *pb.MethodPath, info *pb.CurrentInfo, message proto.Message) (*pb.ServerComResponse, error) {
 	object, err := ptypes.MarshalAny(message)
 	if err != nil {
 		return nil, err
 	}
 	req := &pb.ClientComRequest{
-		TraceId:    traceId,
-		Id:         userId,
+		TraceId:    info.TraceId,
+		Id:         info.UserId,
 		MethodPath: path,
 		Params:     object,
 	}
