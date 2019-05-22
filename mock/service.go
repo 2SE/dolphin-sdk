@@ -48,7 +48,6 @@ func (s *MockUserService) Get3() (*pb2.User, int) {
 	return nil, 0
 }
 func (s *MockUserService) NotParam() error {
-	fmt.Println(server.GetUserId())
 	return nil
 }
 func (s *MockUserService) sendRequest() {
@@ -58,7 +57,8 @@ func (s *MockUserService) sendRequest() {
 			Revision: "v1",
 			Action:   "GetUser",
 		},
-		nil, //&pb2.GetUserRequest{},
+		"", "", nil, //&pb2.GetUserRequest{},
+
 	)
 	if err != nil {
 		fmt.Println("GetUser_V2 err:", err)
