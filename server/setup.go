@@ -10,6 +10,10 @@ import (
 	"os"
 )
 
+func Stop() {
+	base.stop()
+}
+
 //grpc server start
 //address: dolphin address  http://www.xxx.com:1111
 //services: business service

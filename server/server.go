@@ -84,7 +84,7 @@ func (b *baseService) run(c *Config) {
 }
 func (b *baseService) stop() {
 	if b.svc != nil {
-		b.svc.Stop()
+		b.svc.GracefulStop()
 		b.listen.Close()
 	}
 }
