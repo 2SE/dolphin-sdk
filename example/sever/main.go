@@ -9,7 +9,7 @@ import (
 func main() {
 	c := &server.Config{
 		AppName:         "userApp",
-		Address:         "127.0.0.1:8848",
+		Address:         "192.168.10.169:8848",
 		WriteBufSize:    32 * 1024,
 		ReadBufSize:     32 * 1024,
 		ConnTimeout:     time.Second * 10,
@@ -22,9 +22,9 @@ func main() {
 	//1. 启动dolphin
 	//2. 启动server
 	//3. 启动client
-	//server.Start(c, mock.MkService)
+	server.Start(c, mock.MkService)
 	//只启动grpc
 	//1. 启动server
 	//2. 启动client
-	server.StartGrpcOnly(c, mock.MkService)
+	//server.StartGrpcOnly(c, mock.MkService)
 }

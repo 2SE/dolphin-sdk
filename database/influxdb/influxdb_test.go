@@ -9,8 +9,8 @@ import (
 func TestNewInfluxdb(t *testing.T) {
 
 	cli, err := NewInfluxdb(&client.HTTPConfig{
-		Addr:     "http://localhost:8086",
-		Username: "rennbon",
+		Addr:     "http://192.168.9.130:8086",
+		Username: "admin",
 		Password: "111111",
 		Timeout:  time.Second * 5,
 	})

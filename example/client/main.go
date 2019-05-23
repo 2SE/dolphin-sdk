@@ -22,7 +22,7 @@ func main() {
 	ctx1, _ := context.WithTimeout(context.Background(), time.Second*5)
 	//defer cel()
 	//conn, err := grpc.DialContext(ctx1, address, grpc.WithBlock(), grpc.WithInsecure())
-	conn, err := grpc.DialContext(ctx1, "127.0.0.1:8848", grpc.WithBlock(), grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx1, "192.168.9.130:9528", grpc.WithBlock(), grpc.WithInsecure())
 	if err != nil {
 		log.Println("did not connect: %v", err)
 		return
