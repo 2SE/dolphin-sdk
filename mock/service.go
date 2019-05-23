@@ -4,7 +4,6 @@ import (
 	"errors"
 	pb2 "github.com/2se/dolphin-sdk/mock/pb"
 	"github.com/2se/dolphin-sdk/pb"
-	"github.com/sirupsen/logrus"
 )
 
 var MkService = new(MockUserService)
@@ -40,7 +39,6 @@ func (s *MockUserService) Get1(a int) (b int, err error) {
 	return 0, nil
 }
 func (s *MockUserService) GetUser_V3(info *pb.CurrentInfo, request *pb2.GetUserRequest) (err error) {
-	logrus.Info(info)
 	return nil
 }
 func (s *MockUserService) Get3() (*pb2.User, int) {
