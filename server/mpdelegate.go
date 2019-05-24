@@ -119,7 +119,7 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 			response.Body = object
 		}
 	}
-	if !vals[errIndx].IsNil() {
+	if len(vals) != 0 && !vals[errIndx].IsNil() {
 		response.Code = 500
 		response.Text = vals[errIndx].Interface().(error).Error()
 	}

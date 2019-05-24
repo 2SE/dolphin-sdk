@@ -102,7 +102,9 @@ func parseServices(services ...interface{}) error {
 					continue
 				}
 			}
-			if numOut == 1 {
+			if numOut == 0 {
+
+			} else if numOut == 1 {
 				if a.Func.Type().Out(0).Name() != "error" {
 					continue
 				}
