@@ -84,16 +84,22 @@ func parseServices(services ...interface{}) error {
 				ins = make([]reflect.Type, numIn-1)
 			)
 			if numIn > 1 {
+				fl := false
 				for i := 1; i < numIn; i++ {
 					if a.Func.Type().In(i).Kind() != reflect.Ptr {
-						continue
+						fl = true
+						break
 					}
 					ins[i-1] = a.Func.Type().In(i).Elem()
 					p1 := reflect.New(ins[i-1]).Interface().(descriptor.Message)
 					fd1, _ := descriptor.ForMessage(p1)
 					if *fd1.Syntax != syntax {
-						continue
+						fl = true
+						break
 					}
+				}
+				if fl {
+					continue
 				}
 			}
 			if numOut == 1 {
