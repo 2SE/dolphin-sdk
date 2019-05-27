@@ -135,9 +135,7 @@ func parseServices(withDoc bool, services ...interface{}) error {
 				return fmt.Errorf("the service index of %d and the method %s is err:%v the ", idx, fnm, err)
 			}
 			if withDoc {
-				fmt.Println(resource, fnm)
 				doc := mps[resource][fnm]
-				fmt.Println("doc=>", doc)
 				registerManager.AppendMethod(version, r, action, doc, ins, out, numIn, numOut)
 			}
 			f = true
@@ -219,6 +217,5 @@ func getDocs(paths []string) error {
 			}
 		}
 	}
-	fmt.Println(mps)
 	return nil
 }

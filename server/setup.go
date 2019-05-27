@@ -96,5 +96,7 @@ func GenDoc(appName string, paths []string, services ...interface{}) {
 	}
 	registerManager.SetTitle(appName)
 	err = parseServices(true, services...)
-	logrus.Error(err)
+	if err != nil {
+		logrus.Error(err)
+	}
 }
