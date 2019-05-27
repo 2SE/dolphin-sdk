@@ -13,12 +13,12 @@ import (
 func main() {
 	c := &server.Config{
 		AppName:         "userApp",
-		Address:         "192.168.1.10:8848",
+		Address:         "192.168.10.169:8848",
 		WriteBufSize:    32 * 1024,
 		ReadBufSize:     32 * 1024,
 		ConnTimeout:     time.Second * 10,
-		DolphinHttpAddr: "http://192.168.1.10:9527",
-		DolphinGrpcAddr: "192.168.1.10:9528",
+		DolphinHttpAddr: "http://192.168.9.130:9527",
+		DolphinGrpcAddr: "192.168.9.130:9528",
 		RequestTimeout:  time.Second * 30,
 	}
 

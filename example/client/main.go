@@ -19,7 +19,7 @@ import (
 //在没dolphin的情况下测试grpc-server流程可以用此方法
 func main() {
 	//"192.168.10.169:8848"
-	addr := "192.168.1.10:9528"
+	addr := "192.168.9.130:9528"
 	oneMethod(addr)
 	//addr := "192.168.10.169:8848"
 	//parallelMethod(time.Minute, addr, 5000, 50000)
