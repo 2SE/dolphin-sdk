@@ -1,11 +1,17 @@
 package server
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/2se/dolphin-sdk/dolregister"
 	"github.com/golang/protobuf/descriptor"
 	"github.com/sirupsen/logrus"
+	"go/ast"
+	"go/parser"
+	"go/token"
+	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strings"
@@ -32,6 +38,8 @@ var (
 	ErrServiceUseless    = errors.New("There is no public method in the service")
 	ErrServiceNameSuffix = errors.New("The service name must end with the Service suffix")
 	ErrServicesEmpty     = errors.New("The services cannot be empty.")
+
+	mps map[string]map[string]string
 )
 
 func parseResouce(serviceName string) (bool, string) {
@@ -55,7 +63,7 @@ func parseVersion(methodName string) (version, action string) {
 	arr := strings.Split(methodName, line)
 	return strings.ToLower(strings.ReplaceAll(v, line, dot)), arr[0]
 }
-func parseServices(services ...interface{}) error {
+func parseServices(withDoc bool, services ...interface{}) error {
 	if len(services) == 0 {
 		return ErrServicesEmpty
 	}
@@ -126,7 +134,12 @@ func parseServices(services ...interface{}) error {
 			if err != nil {
 				return fmt.Errorf("the service index of %d and the method %s is err:%v the ", idx, fnm, err)
 			}
-			registerManager.AppendMethod(version, r, action, ins, out, numIn, numOut)
+			if withDoc {
+				fmt.Println(resource, fnm)
+				doc := mps[resource][fnm]
+				fmt.Println("doc=>", doc)
+				registerManager.AppendMethod(version, r, action, doc, ins, out, numIn, numOut)
+			}
 			f = true
 		}
 		if !f {
@@ -135,7 +148,77 @@ func parseServices(services ...interface{}) error {
 		delegate.registerService(r, reflect.ValueOf(s))
 	}
 	base.readyGo()
-	registerManager.GenDoc()
-	logrus.Info("The service group registered successfully.")
+	if withDoc {
+		registerManager.GenDoc()
+	} else {
+		logrus.Info("The service group registered successfully.")
+	}
+	return nil
+}
+
+//key: structName [1]: funcName , [2]: doc
+func getDoc(pathAddr string) error {
+	fset := token.NewFileSet()
+	filter := isGoFile
+	pkgs, err := parser.ParseDir(fset, pathAddr, filter, parser.ParseComments)
+	if err != nil {
+		return err
+	}
+	buff := new(bytes.Buffer)
+	for _, pkg := range pkgs {
+		for _, v := range pkg.Files {
+			for _, vi := range v.Decls {
+				switch vi.(type) {
+				case *ast.FuncDecl:
+					{
+						decl := vi.(*ast.FuncDecl)
+						buff.Reset()
+						if decl.Recv == nil {
+							continue
+						}
+						structName := decl.Recv.List[0].Type.(*ast.StarExpr).X.(*ast.Ident).Name
+						if decl.Doc != nil {
+							for _, vii := range decl.Doc.List {
+								buff.WriteString(vii.Text)
+								buff.WriteString("\n")
+							}
+							if mps[structName] == nil {
+								mps[structName] = make(map[string]string)
+							}
+							mps[structName][decl.Name.Name] = buff.String()
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+func isGoFile(fi os.FileInfo) bool {
+	name := fi.Name()
+	return !fi.IsDir() &&
+		len(name) > 0 && name[0] != '.' && // ignore .files
+		filepath.Ext(name) == ".go"
+}
+
+func getDocs(paths []string) error {
+	mps = make(map[string]map[string]string)
+	ptm := make([]string, 0, len(paths))
+	for _, path := range paths {
+		f := true
+		for _, v := range ptm {
+			if v == path {
+				f = false
+				break
+			}
+		}
+		if f {
+			err := getDoc(path)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	fmt.Println(mps)
 	return nil
 }

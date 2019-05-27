@@ -37,8 +37,7 @@ func Start(c *Config, services ...interface{}) {
 	newDolphinClient(c.DolphinGrpcAddr, c.RequestTimeout)
 	registerManager.SetAppName(c.AppName)
 	registerManager.SetAddress(c.Address)
-	registerManager.SetTitle(c.AppName)
-	err := parseServices(services...)
+	err := parseServices(false, services...)
 	if err != nil {
 		panic(err)
 	}
@@ -67,8 +66,7 @@ func StartGrpcOnly(c *Config, services ...interface{}) {
 	}
 	registerManager.SetAppName(c.AppName)
 	registerManager.SetAddress(c.Address)
-	registerManager.SetTitle(c.AppName)
-	err := parseServices(services...)
+	err := parseServices(false, services...)
 	if err != nil {
 		panic(err)
 	}
@@ -89,4 +87,14 @@ func SendGrpcRequest(path *pb.MethodPath, info *pb.CurrentInfo, message proto.Me
 	}
 	ctx, _ := context.WithTimeout(context.Background(), requestTimeout)
 	return dolphinClient.Request(ctx, req)
+}
+
+func GenDoc(appName string, paths []string, services ...interface{}) {
+	err := getDocs(paths)
+	if err != nil {
+		logrus.Error(err)
+	}
+	registerManager.SetTitle(appName)
+	err = parseServices(true, services...)
+	logrus.Error(err)
 }

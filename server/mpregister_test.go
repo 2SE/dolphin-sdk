@@ -3,11 +3,14 @@ package server
 import (
 	"errors"
 	"fmt"
+	"github.com/2se/dolphin-sdk/mock"
 	"github.com/2se/dolphin-sdk/mock/pb"
 	"github.com/golang/protobuf/descriptor"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"path"
 	"reflect"
 	"strings"
 	"testing"
@@ -46,6 +49,9 @@ func TestReflectMethod(t *testing.T) {
 	//vtyp := reflect.ValueOf(mockService)
 	fmt.Println(typ.Elem().Name())
 	fmt.Println(typ.Elem().Kind() == reflect.Struct)
+
+	fmt.Println("filepath", typ.Elem().PkgPath())
+
 	for i := 0; i < typ.NumMethod(); i++ {
 		a := typ.Method(i)
 
@@ -152,4 +158,24 @@ func TestVersionReplace(t *testing.T) {
 	fmt.Println(newv)
 
 	fmt.Println(reflect.TypeOf(pb.GetUserRequest{}).String())
+}
+
+func TestGenDoc(t *testing.T) {
+	dir, _ := os.Getwd()
+	dirTmp := path.Join(getParentDirectory(dir), "mock")
+	//fmt.Println(os.Getwd())
+	GenDoc("appName", []string{dirTmp}, mock.MkService)
+}
+
+func substr(s string, pos, length int) string {
+	runes := []rune(s)
+	l := pos + length
+	if l > len(runes) {
+		l = len(runes)
+	}
+	return string(runes[pos:l])
+}
+
+func getParentDirectory(dirctory string) string {
+	return substr(dirctory, 0, strings.LastIndex(dirctory, "/"))
 }

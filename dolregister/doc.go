@@ -12,7 +12,7 @@ var curType = reflect.TypeOf(pb.CurrentInfo{})
 
 type Doc interface {
 	SetTitle(appname string)
-	AppendMethod(version, resource, action string, ins []reflect.Type, out reflect.Type, numIn, numOut int)
+	AppendMethod(version, resource, action, doc string, ins []reflect.Type, out reflect.Type, numIn, numOut int)
 	//生成document
 	GenDoc()
 }
@@ -26,7 +26,7 @@ type markdown struct {
 func (m *markdown) SetTitle(appname string) {
 	m.content.WriteString(fmt.Sprintf("## %s\n", appname))
 }
-func (m *markdown) AppendMethod(version, resource, action string, ins []reflect.Type, out reflect.Type, numIn, numOut int) {
+func (m *markdown) AppendMethod(version, resource, action, doc string, ins []reflect.Type, out reflect.Type, numIn, numOut int) {
 	_, ok := m.resource[resource]
 	if !ok {
 		m.resource[resource] = struct{}{}
@@ -39,6 +39,11 @@ func (m *markdown) AppendMethod(version, resource, action string, ins []reflect.
 		m.mindex++
 		m.content.WriteString(fmt.Sprintf("#### %d. action: %s \t version:%s\n", m.mindex, action, version))
 		m.content.WriteString("```\n")
+		if doc != "" {
+			m.content.WriteString("describe：\n")
+			m.content.WriteString(doc)
+			m.content.WriteString("\n")
+		}
 		if numIn > 1 {
 			for _, v := range ins {
 				if v != curType {

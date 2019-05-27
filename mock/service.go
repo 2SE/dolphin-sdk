@@ -28,6 +28,7 @@ func (s *MockUserService) GetUser(request *pb2.GetUserRequest) (*pb2.User, error
 }
 
 //GetUser v1.123
+//获取用户信息 这是一些描述
 func (s *MockUserService) GetUser_V1_123(request *pb2.GetUserRequest) (*pb2.User, error) {
 	return nil, nil
 }

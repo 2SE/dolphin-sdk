@@ -3,13 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-
-	"github.com/golang/protobuf/ptypes"
-
 	pb2 "github.com/2se/dolphin-sdk/example/client/pb"
 	"github.com/2se/dolphin-sdk/pb"
-	//"github.com/golang/protobuf/ptypes"
-
+	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc"
 	"log"
 	"time"
