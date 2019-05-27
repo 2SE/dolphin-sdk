@@ -1,6 +1,5 @@
-### dolphin-sdk使用方法
-该sdk为正对dolphin的grpc服务的封装,可以让开发者不用尽量少的理解dolphin的概念，
-在目录example中有简单的server和clinet的实现。
+### 概念
+dolphin-sdk是对dolphin框架快速度接入的一个封装，让开发者更多的关注服务业务逻辑的实现，为此该sdk提供了一键式启动并注册到dolphin框架,同时也提供了不依赖dolphin启动和接口文档的生成。
 
 ### 对于注册服务的约束
 1. 所有业务服务需要以"Service"结尾，如"UserService"的"User"将会被解析为Resource
@@ -35,7 +34,12 @@ func StartGrpcOnly(c *Config, services ...interface{}) {
 func SendGrpcRequest(path *pb.MethodPath, info *pb.CurrentInfo, message proto.Message) (*pb.ServerComResponse, error) {
 }
 
+//生成接口文档（需要依赖.go文件）
+//paths: 服务所在package路径 ps: "/opt/project/dolphin-sdk/mock"
+func GenDoc(appName string, paths []string, services ...interface{}) {
+}
 ```
+
 ### 微服务开发注意事项
 1. 多处功能相似点，以组件的方式开发，如点赞，他横跨多个场景（范式必定统一），随着业务的拓展，被运用的地方会逐步增加，所以以组件的方式开发会对以后的拓展带来便利。
 2. 对于从其他grpc服务获取同类信息的需用批量方法而不要简单for循环便利，这个是偷懒人的通病，因为逻辑复杂时一次性查会带来复杂度，这个对于多服务互相依赖的微服务环境，这是很可怕的。因为你不知道你循环调了5次方法，而提供这个方法的微服务内部也是5个20长度的循环，制造高并发就很容易了（这个虽然不是难点，但很重要，微服务大忌）。

@@ -89,6 +89,7 @@ func SendGrpcRequest(path *pb.MethodPath, info *pb.CurrentInfo, message proto.Me
 	return dolphinClient.Request(ctx, req)
 }
 
+// paths: 待注册服务所在的文件夹
 func GenDoc(appName string, paths []string, services ...interface{}) {
 	err := getDocs(paths)
 	if err != nil {
