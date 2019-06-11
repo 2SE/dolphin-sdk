@@ -7,8 +7,9 @@ import (
 )
 
 func TestNewRedis(t *testing.T) {
+
 	op := &redis.Options{
-		Addr:               "127.0.0.1:6379",
+		Addr:               "192.168.10.189:19000",
 		DB:                 15,
 		DialTimeout:        10 * time.Second,
 		ReadTimeout:        30 * time.Second,
@@ -18,10 +19,28 @@ func TestNewRedis(t *testing.T) {
 		IdleTimeout:        500 * time.Millisecond,
 		IdleCheckFrequency: 500 * time.Millisecond,
 	}
-	_, err := NewRedis(op)
+	cli, err := NewRedis(op)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 		return
+	}
+	key := "TEST:12345"
+	val := "this is a test"
+	err = cli.Set(key, val, time.Minute).Err()
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
+	val2, err := cli.Get(key).Result()
+	if err == redis.Nil {
+		t.Error("missing_key does not exist")
+		t.Fail()
+	} else if err != nil {
+		t.Error(err)
+		t.Fail()
+	} else {
+		t.Log("val is :", val2)
 	}
 }
