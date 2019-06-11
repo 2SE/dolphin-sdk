@@ -23,6 +23,7 @@ type Config struct {
 	RequestTimeout  time.Duration //请求时间跨度限制
 	LogCnf          *log.Config
 	LogLevel        logrus.Level
+	RetryPort       string //grpc服务重新注册http端口  /register?addr=10.0.0.1:1234   默认addr为启动配置
 }
 
 var base = new(baseService)

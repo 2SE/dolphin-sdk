@@ -10,6 +10,10 @@ import (
 	"os"
 )
 
+var (
+	defaultDolphinAddr = ""
+)
+
 func Stop() {
 	base.stop()
 }
@@ -46,6 +50,8 @@ func Start(c *Config, services ...interface{}) {
 	if err != nil {
 		panic(err)
 	}
+	defaultDolphinAddr = c.DolphinHttpAddr
+	withRetryHttp(c.RetryPort)
 	select {}
 }
 

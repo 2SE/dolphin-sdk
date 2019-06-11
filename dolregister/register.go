@@ -32,7 +32,7 @@ func (a *RegisterManager) RegisterServerOnDolpin(address string) error {
 	if err != nil {
 		return err
 	}
-	a = nil
+	//a = nil
 	return nil
 }
 
