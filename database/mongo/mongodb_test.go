@@ -10,7 +10,7 @@ import (
 func TestNewMongo(t *testing.T) {
 	//db.createUser() https://docs.mongodb.com/manual/reference/method/db.createUser/index.html
 	//https://docs.mongodb.com/manual/reference/connection-string/#connections-connection-options
-	uri := "mongodb://rennbon1:123456@127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019/?replicaSet=rs0&maxPoolSize=512"
+	uri := "mongodb://admin:111111@192.168.10.189:27017,192.168.10.189:27018,192.168.10.189:27019/?replicaSet=rs0&readPreference=secondary&maxPoolSize=512"
 	cli, err := NewMongo(&Config{
 		URI: uri,
 	})

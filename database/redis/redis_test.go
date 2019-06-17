@@ -18,6 +18,7 @@ func TestNewRedis(t *testing.T) {
 		PoolTimeout:        30 * time.Second,
 		IdleTimeout:        500 * time.Millisecond,
 		IdleCheckFrequency: 500 * time.Millisecond,
+		Password:           "111111",
 	}
 	cli, err := NewRedis(op)
 	if err != nil {
