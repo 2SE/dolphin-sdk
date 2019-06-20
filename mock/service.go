@@ -24,7 +24,8 @@ func (s *MockUserService) GetUser_V2(request *pb2.GetUserRequest) (*pb2.User, er
 
 //GetUser v1
 func (s *MockUserService) GetUser(request *pb2.GetUserRequest) (*pb2.User, error) {
-	return &pb2.User{UserId: 2, UserName: "Jack", Age: 30}, nil
+	//return &pb2.User{UserId: 2, UserName: "Jack", Age: 30}, nil
+	return nil, errors.New("err result")
 }
 
 //GetUser v1.123
@@ -34,7 +35,7 @@ func (s *MockUserService) GetUser_V1_123(request *pb2.GetUserRequest) (*pb2.User
 }
 
 func (s *MockUserService) getUser_V1_123(request *pb2.GetUserRequest) (*pb2.User, error) {
-	return nil, nil
+	return nil, errors.New("123")
 }
 func (s *MockUserService) Get1(a int) (b int, err error) {
 	return 0, nil

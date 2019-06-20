@@ -9,7 +9,7 @@ import (
 func TestNewRedis(t *testing.T) {
 
 	op := &redis.Options{
-		Addr:               "192.168.10.189:19000",
+		Addr:               "192.168.10.189:19001",
 		DB:                 15,
 		DialTimeout:        10 * time.Second,
 		ReadTimeout:        30 * time.Second,

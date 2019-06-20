@@ -60,7 +60,7 @@ func sendRequest(cli pb.AppServeClient, num int) {
 			Id:      "userid123",
 			MethodPath: &pb.MethodPath{
 				Resource: "MockUser",
-				Revision: "v3",
+				Revision: "v1",
 				Action:   "GetUser",
 			},
 			Params: object,
@@ -100,7 +100,7 @@ func oneMethod(address string) {
 		Id:      "userid123",
 		MethodPath: &pb.MethodPath{
 			Resource: "MockUser",
-			Revision: "v2",
+			Revision: "v1",
 			Action:   "GetUser",
 		},
 		Params: object,

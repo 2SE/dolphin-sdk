@@ -109,7 +109,7 @@ func (m *mpdelegate) invoke(req *pb.ClientComRequest) *pb.ServerComResponse {
 	errIndx := 0
 	if len(vals) == 2 {
 		errIndx = 1
-		if vals[0].Elem().Type() == grpcM.argout && !vals[0].IsNil() {
+		if !vals[0].IsNil() && vals[0].Elem().Type() == grpcM.argout {
 			object, err := ptypes.MarshalAny(vals[0].Interface().(proto.Message))
 			if err != nil {
 				response.Code = 500
