@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package pb;
+import "google/protobuf/any.proto";
+
+
+//登录返回值
+message SubscribeData {
+    int32 source = 1;   //类型  1：约哈消息
+    string type_name =2;//类型名称
+    google.protobuf.Any params = 3;//自定义参数
+}
+
