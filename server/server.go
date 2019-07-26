@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
+	"strings"
 	"time"
 )
 
@@ -42,7 +43,7 @@ func (b *baseService) Request(ctx context.Context, req *pb.ClientComRequest) (*p
 		"version":  req.MethodPath.Revision,
 		"action":   req.MethodPath.Action,
 		"traceId":  req.TraceId,
-	}).Trace(req)
+	}).Trace(req.Params.String())
 
 	response := delegate.invoke(req)
 	if response == nil {
@@ -67,7 +68,9 @@ func (b *baseService) run(c *Config) {
 	if !b.ready {
 		panic("The service is not ready,please register your business services first.")
 	}
-	l, err := net.Listen("tcp", c.Address)
+	strs := strings.Split(c.Address, ":")
+	port := strs[len(strs)-1]
+	l, err := net.Listen("tcp", "0.0.0.0:"+port)
 	if err != nil {
 		panic(fmt.Errorf("tpc listen err:%v ", err))
 	}
