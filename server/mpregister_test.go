@@ -92,13 +92,14 @@ func TestMethodCall(t *testing.T) {
 	val := getAny()
 	tmp := reflect.New(reflect.TypeOf(pb.GetUserRequest{})).Interface().(descriptor.Message)
 
-	fmt.Println(tmp)
+	//fmt.Println(tmp)
 	err := ptypes.UnmarshalAny(val, tmp)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	inputs := make([]reflect.Value, 1)
+	fmt.Println(val.TypeUrl)
 	inputs[0] = reflect.ValueOf(tmp)
 	vals := typ.Call(inputs)
 
