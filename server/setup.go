@@ -6,6 +6,7 @@ import (
 	"github.com/2se/dolphin-sdk/pb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/any"
 	"github.com/sirupsen/logrus"
 	"os"
 )
@@ -81,9 +82,15 @@ func StartGrpcOnly(c *Config, services ...interface{}) {
 
 //发送对其他GRPC服务的调用请求
 func SendGrpcRequest(path *pb.MethodPath, info *pb.CurrentInfo, message proto.Message) (*pb.ServerComResponse, error) {
-	object, err := ptypes.MarshalAny(message)
-	if err != nil {
-		return nil, err
+	var (
+		object *any.Any
+		err    error
+	)
+	if message != nil {
+		object, err = ptypes.MarshalAny(message)
+		if err != nil {
+			return nil, err
+		}
 	}
 	req := &pb.ClientComRequest{
 		TraceId:    info.TraceId,
